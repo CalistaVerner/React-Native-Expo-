@@ -21,42 +21,44 @@ export function MoodPicker({ value, onChange, labels, selectedLabel, theme }: Pr
         const isSelected = mood.id === value;
 
         return (
-          <SelectableCard
-            key={mood.id}
-            title={labels[mood.id]}
-            theme={theme}
-            onPress={() => onChange(mood.id)}
-            isSelected={isSelected}
-            statusText={isSelected ? selectedLabel : undefined}
-            compact
-            showSelectionIndicator
-          >
-            {({ selectionProgress }) => (
-              <Animated.Text
-                style={[
-                  moodPickerStyles.emoji,
-                  {
-                    transform: [
-                      {
-                        scale: selectionProgress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [1, 1.1],
-                        }),
-                      },
-                      {
-                        rotate: selectionProgress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: ['0deg', '-6deg'],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                {mood.emoji}
-              </Animated.Text>
-            )}
-          </SelectableCard>
+          <View key={mood.id} style={moodPickerStyles.cell}>
+            <SelectableCard
+              title={labels[mood.id]}
+              theme={theme}
+              onPress={() => onChange(mood.id)}
+              isSelected={isSelected}
+              statusText={isSelected ? selectedLabel : undefined}
+              compact
+              layout="tile"
+              selectionStyle="inline"
+            >
+              {({ selectionProgress }) => (
+                <Animated.Text
+                  style={[
+                    moodPickerStyles.emoji,
+                    {
+                      transform: [
+                        {
+                          scale: selectionProgress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [1, 1.12],
+                          }),
+                        },
+                        {
+                          rotate: selectionProgress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ['0deg', '-6deg'],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                >
+                  {mood.emoji}
+                </Animated.Text>
+              )}
+            </SelectableCard>
+          </View>
         );
       })}
     </View>

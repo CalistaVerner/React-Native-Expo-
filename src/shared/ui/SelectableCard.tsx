@@ -9,6 +9,9 @@ type AnimatedChildrenRenderState = {
   pressProgress: Animated.Value;
 };
 
+type SelectionStyle = 'inline' | 'corner' | 'both';
+type SelectableCardLayout = 'default' | 'tile';
+
 type Props = {
   title: string;
   theme: AppTheme;
@@ -20,8 +23,21 @@ type Props = {
   accessoryText?: string;
   compact?: boolean;
   showSelectionIndicator?: boolean;
+  selectionStyle?: SelectionStyle;
+  layout?: SelectableCardLayout;
   children?: React.ReactNode | ((state: AnimatedChildrenRenderState) => React.ReactNode);
 };
+
+function resolveSelectionIndicator(selectionStyle: SelectionStyle | undefined, fallback: boolean) {
+  if (selectionStyle === 'inline') return false;
+  if (selectionStyle === 'corner' || selectionStyle === 'both') return true;
+  return fallback;
+}
+
+function resolveStatusVisibility(selectionStyle: SelectionStyle | undefined, hasStatus: boolean) {
+  if (!hasStatus) return false;
+  return selectionStyle !== 'corner';
+}
 
 export function SelectableCard({
   title,
@@ -34,18 +50,25 @@ export function SelectableCard({
   accessoryText,
   compact = false,
   showSelectionIndicator = false,
+  selectionStyle,
+  layout = 'default',
   children,
 }: Props) {
+  const isTile = layout === 'tile';
+  const resolvedShowSelectionIndicator = resolveSelectionIndicator(selectionStyle, showSelectionIndicator);
+  const resolvedShowStatus = resolveStatusVisibility(selectionStyle, Boolean(statusText || accessoryText));
+
   return (
     <AnimatedSelectableSurface
       theme={theme}
       onPress={onPress}
       isSelected={isSelected}
       borderRadius={compact ? 18 : 20}
-      showSelectionIndicator={showSelectionIndicator}
+      showSelectionIndicator={resolvedShowSelectionIndicator}
       style={[
         selectableCardStyles.pressableBase,
         compact && selectableCardStyles.pressableCompact,
+        isTile && selectableCardStyles.pressableTile,
         {
           borderColor: isSelected ? theme.colors.primary : theme.colors.border,
           backgroundColor: isSelected ? theme.colors.surfaceSoft : theme.colors.surfaceAlt,
@@ -55,12 +78,34 @@ export function SelectableCard({
       selectedStyle={isSelected ? selectableCardStyles.pressableSelected : undefined}
     >
       {({ selectionProgress, pressProgress }) => (
-        <View style={selectableCardStyles.content}>
-          <View style={selectableCardStyles.header}>
-            <View style={selectableCardStyles.titleWrap}>
-              <Text style={[selectableCardStyles.title, { color: theme.colors.text }]}>{title}</Text>
+        <View style={[selectableCardStyles.content, isTile && selectableCardStyles.contentTile]}>
+          <View style={[selectableCardStyles.header, isTile && selectableCardStyles.headerTile]}>
+            <View style={[
+              selectableCardStyles.titleWrap,
+              isTile && selectableCardStyles.titleWrapTile,
+              resolvedShowSelectionIndicator && selectableCardStyles.titleWrapWithIndicator,
+            ]}>
+              <Text
+                numberOfLines={isTile ? 2 : 3}
+                style={[
+                  selectableCardStyles.title,
+                  isTile && selectableCardStyles.titleTile,
+                  { color: theme.colors.text },
+                ]}
+              >
+                {title}
+              </Text>
               {description ? (
-                <Text style={[selectableCardStyles.description, { color: theme.colors.textMuted }]}>{description}</Text>
+                <Text
+                  numberOfLines={isTile ? 2 : 3}
+                  style={[
+                    selectableCardStyles.description,
+                    isTile && selectableCardStyles.descriptionTile,
+                    { color: theme.colors.textMuted },
+                  ]}
+                >
+                  {description}
+                </Text>
               ) : null}
             </View>
 
@@ -68,6 +113,7 @@ export function SelectableCard({
               <Animated.View
                 style={[
                   selectableCardStyles.badgeWrap,
+                  isTile && selectableCardStyles.badgeWrapTile,
                   {
                     transform: [
                       {
@@ -97,23 +143,33 @@ export function SelectableCard({
 
           {children ? (
             <Animated.View
-              style={{
-                transform: [
-                  {
-                    scale: selectionProgress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 1.02],
-                    }),
-                  },
-                ],
-              }}
+              style={[
+                selectableCardStyles.childrenWrap,
+                isTile && selectableCardStyles.childrenWrapTile,
+                {
+                  transform: [
+                    {
+                      scale: selectionProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.02],
+                      }),
+                    },
+                    {
+                      translateY: pressProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 1],
+                      }),
+                    },
+                  ],
+                },
+              ]}
             >
               {typeof children === 'function' ? children({ selectionProgress, pressProgress }) : children}
             </Animated.View>
           ) : null}
 
-          {(statusText || accessoryText) ? (
-            <View style={selectableCardStyles.footer}>
+          {resolvedShowStatus ? (
+            <View style={[selectableCardStyles.footer, isTile && selectableCardStyles.footerTile]}>
               {statusText ? (
                 <View style={selectableCardStyles.statusWrap}>
                   <Animated.View

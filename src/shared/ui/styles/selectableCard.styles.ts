@@ -18,8 +18,18 @@ export const selectableCardStyles = StyleSheet.create({
     minHeight: 52,
     borderRadius: 18,
   },
+  pressableTile: {
+    minHeight: 116,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+  },
   content: {
     gap: 10,
+  },
+  contentTile: {
+    flex: 1,
+    justifyContent: 'space-between',
+    gap: 12,
   },
   header: {
     flexDirection: 'row',
@@ -27,25 +37,60 @@ export const selectableCardStyles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
   },
+  headerTile: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: 8,
+  },
   titleWrap: {
     flex: 1,
     gap: 6,
+  },
+  titleWrapTile: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  titleWrapWithIndicator: {
+    paddingRight: 24,
   },
   title: {
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '800',
   },
+  titleTile: {
+    textAlign: 'center',
+    fontSize: 14,
+    lineHeight: 18,
+    minHeight: 36,
+  },
   description: {
     fontSize: 13,
     lineHeight: 18,
     fontWeight: '500',
+  },
+  descriptionTile: {
+    textAlign: 'center',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  childrenWrap: {
+    alignSelf: 'stretch',
+  },
+  childrenWrapTile: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 10,
+  },
+  footerTile: {
+    justifyContent: 'center',
   },
   statusWrap: {
     flexDirection: 'row',
@@ -69,6 +114,9 @@ export const selectableCardStyles = StyleSheet.create({
   },
   badgeWrap: {
     alignSelf: 'flex-start',
+  },
+  badgeWrapTile: {
+    alignSelf: 'center',
   },
   badge: {
     paddingHorizontal: 10,

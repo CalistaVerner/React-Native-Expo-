@@ -6,6 +6,9 @@ export const moodPickerStyles = StyleSheet.create({
     gap: 10,
     marginTop: 16,
   },
+  cell: {
+    flex: 1,
+  },
   emoji: {
     fontSize: 28,
     lineHeight: 32,

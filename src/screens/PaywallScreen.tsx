@@ -89,6 +89,7 @@ export default function PaywallScreen() {
             isSelected={selectedPlan === 'monthly'}
             statusText={selectedPlan === 'monthly' ? t.common.selected : undefined}
             accessoryText={monthlyPrice}
+            selectionStyle="inline"
           >
             <View style={paywallStyles.planPriceWrap}>
               <Text style={[paywallStyles.planPrice, { color: theme.colors.text }]}>{monthlyPrice}</Text>
@@ -104,6 +105,7 @@ export default function PaywallScreen() {
             statusText={selectedPlan === 'yearly' ? t.common.selected : undefined}
             badgeText={t.paywall.plans.yearly.badge}
             accessoryText={yearlyPrice}
+            selectionStyle="inline"
           >
             <View style={paywallStyles.planPriceWrap}>
               <Text style={[paywallStyles.planPrice, { color: theme.colors.text }]}>{yearlyPrice}</Text>
