@@ -25,6 +25,7 @@ export default function MeditationsScreen() {
     isGenerating,
     setIsGenerating,
     regionCode,
+    language,
   } = useAppContext();
 
   const handleGenerate = async () => {
@@ -32,7 +33,7 @@ export default function MeditationsScreen() {
 
     setIsGenerating(true);
     try {
-      const result = await generateAffirmation(selectedMood);
+      const result = await generateAffirmation(language, selectedMood);
       setGeneratedText(result.text);
       setLastPrompt(result.prompt);
     } finally {
