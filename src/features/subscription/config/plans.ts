@@ -3,11 +3,10 @@ import type { Plan } from '../model/types';
 export const PLANS: Plan[] = [
   {
     id: 'monthly',
-    price: '$9.99 / month',
+    priceUsd: 9.99,
   },
   {
     id: 'yearly',
-    price: '$49.99 / year',
-    isRecommended: true,
+    priceUsd: 49.99,
   },
 ];

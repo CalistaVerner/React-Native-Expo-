@@ -24,15 +24,13 @@ export default function MeditationsScreen() {
     setLastPrompt,
     isGenerating,
     setIsGenerating,
+    regionCode,
   } = useAppContext();
 
   const handleGenerate = async () => {
-    if (isGenerating) {
-      return;
-    }
+    if (isGenerating) return;
 
     setIsGenerating(true);
-
     try {
       const result = await generateAffirmation(selectedMood);
       setGeneratedText(result.text);
@@ -45,33 +43,35 @@ export default function MeditationsScreen() {
   return (
     <Screen theme={theme}>
       <View style={styles.topBar}>
-        <View style={styles.topTextBlock}>
+        <View style={{ flex: 1 }}>
           <Text style={[styles.title, { color: theme.colors.text }]}>{t.meditations.title}</Text>
           <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
             {isSubscribed ? t.meditations.premiumUnlocked : t.meditations.freeMode}
           </Text>
         </View>
 
-        <View style={styles.rightActions}>
-          {!isSubscribed ? (
-            <Pressable onPress={() => setScreen('paywall')} style={[styles.upgradePill, { backgroundColor: theme.colors.primary }]}>
-              <Text style={[styles.upgradePillText, { color: theme.colors.primaryText }]}>{t.meditations.upgrade}</Text>
-            </Pressable>
-          ) : (
-            <View style={[styles.upgradePill, { backgroundColor: theme.colors.success }]}>
-              <Text style={[styles.upgradePillText, { color: theme.colors.successText }]}>{t.meditations.premium}</Text>
-            </View>
-          )}
+        <Pressable onPress={() => setScreen('preferences')} style={[styles.settingsButton, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt }]}> 
+          <Text style={[styles.settingsText, { color: theme.colors.text }]}>{t.nav.openSettings}</Text>
+        </Pressable>
+      </View>
 
-          <Pressable onPress={() => setScreen('preferences')} style={[styles.settingsButton, { borderColor: theme.colors.border }]}>
-            <Text style={[styles.settingsText, { color: theme.colors.text }]}>{t.nav.openSettings}</Text>
-          </Pressable>
+      <View style={[styles.welcomeCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[styles.welcomeTitle, { color: theme.colors.text }]}>{t.meditations.welcome}</Text>
+        <Text style={[styles.welcomeText, { color: theme.colors.textMuted }]}>{t.meditations.settingsHint}</Text>
+        <View style={styles.quickMeta}>
+          <View style={[styles.metaPill, { backgroundColor: theme.colors.surfaceAlt }]}> 
+            <Text style={[styles.metaPillText, { color: theme.colors.text }]}>{t.regions[regionCode]}</Text>
+          </View>
+          <View style={[styles.metaPill, { backgroundColor: isSubscribed ? theme.colors.success : theme.colors.surfaceAlt }]}> 
+            <Text style={[styles.metaPillText, { color: isSubscribed ? theme.colors.successText : theme.colors.text }]}>
+              {isSubscribed ? t.meditations.premium : t.meditations.upgrade}
+            </Text>
+          </View>
         </View>
       </View>
 
-      <View style={[styles.aiCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-        <Text style={[styles.aiEyebrow, { color: theme.colors.primary }]}>{t.meditations.aiEyebrow}</Text>
-        <SectionTitle title={t.meditations.aiTitle} theme={theme} />
+      <View style={[styles.aiCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <SectionTitle title={t.meditations.aiEyebrow} caption={t.meditations.aiTitle} theme={theme} />
 
         <MoodPicker
           value={selectedMood}
@@ -88,17 +88,19 @@ export default function MeditationsScreen() {
           title={isGenerating ? t.common.generating : t.meditations.aiButton}
           onPress={handleGenerate}
           theme={theme}
+          variant="soft"
           disabled={isGenerating}
+          leftAdornment="🪷"
         />
 
-        <View style={[styles.outputCard, { backgroundColor: theme.colors.surfaceAlt }]}>
+        <View style={[styles.output, { backgroundColor: theme.colors.surfaceAlt }]}> 
           <Text style={[styles.outputText, { color: theme.colors.text }]}>
             {generatedText || t.meditations.aiPlaceholder}
           </Text>
         </View>
 
         {!!lastPrompt && (
-          <View style={[styles.promptBox, { backgroundColor: theme.colors.surfaceAlt }]}>
+          <View style={[styles.promptBox, { backgroundColor: theme.colors.surfaceAlt }]}> 
             <Text style={[styles.promptLabel, { color: theme.colors.primary }]}>{t.common.mockPrompt}</Text>
             <Text style={[styles.promptText, { color: theme.colors.textMuted }]}>{lastPrompt}</Text>
           </View>
@@ -124,7 +126,6 @@ export default function MeditationsScreen() {
                 setScreen('paywall');
                 return;
               }
-
               setGeneratedText(`${t.common.sessionOpenedPrefix}: ${item.title}. ${t.common.sessionOpenedSuffix}`);
             }}
           />
@@ -136,35 +137,19 @@ export default function MeditationsScreen() {
 
 const styles = StyleSheet.create({
   topBar: {
-    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     gap: 12,
-  },
-  topTextBlock: {
-    maxWidth: '82%',
   },
   title: {
     fontSize: 28,
-    fontWeight: '800',
+    fontWeight: '900',
   },
   subtitle: {
     fontSize: 14,
     marginTop: 6,
     lineHeight: 20,
-  },
-  rightActions: {
-    flexDirection: 'row',
-    gap: 10,
-    flexWrap: 'wrap',
-  },
-  upgradePill: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 999,
-    alignSelf: 'flex-start',
-  },
-  upgradePillText: {
-    fontSize: 13,
-    fontWeight: '800',
   },
   settingsButton: {
     borderWidth: 1,
@@ -177,29 +162,51 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
   },
+  welcomeCard: {
+    borderRadius: 28,
+    padding: 20,
+    borderWidth: 1,
+  },
+  welcomeTitle: {
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: '900',
+  },
+  welcomeText: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 8,
+  },
+  quickMeta: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 16,
+  },
+  metaPill: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  metaPillText: {
+    fontSize: 12,
+    fontWeight: '800',
+  },
   aiCard: {
     borderRadius: 26,
     padding: 18,
     borderWidth: 1,
+    gap: 16,
   },
-  aiEyebrow: {
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 8,
-  },
-  outputCard: {
+  output: {
     borderRadius: 18,
     padding: 16,
-    marginTop: 14,
   },
   outputText: {
     fontSize: 15,
     lineHeight: 23,
   },
   promptBox: {
-    marginTop: 12,
     padding: 14,
     borderRadius: 16,
   },

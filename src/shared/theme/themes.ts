@@ -1,4 +1,5 @@
 export type ThemeMode = 'dark' | 'light';
+export type ThemePreference = 'system' | ThemeMode;
 
 export type AppTheme = {
   mode: ThemeMode;
@@ -7,14 +8,18 @@ export type AppTheme = {
     bg: string;
     surface: string;
     surfaceAlt: string;
+    surfaceSoft: string;
     text: string;
     textMuted: string;
+    textSubtle: string;
     primary: string;
     primaryText: string;
     accent: string;
     border: string;
     success: string;
     successText: string;
+    warning: string;
+    shadow: string;
     lockedOverlay: string;
   };
 };
@@ -23,40 +28,56 @@ const darkTheme: AppTheme = {
   mode: 'dark',
   statusBar: 'light-content',
   colors: {
-    bg: '#0B1020',
-    surface: '#141B34',
-    surfaceAlt: '#0F152B',
+    bg: '#0A1020',
+    surface: '#131B32',
+    surfaceAlt: '#10182C',
+    surfaceSoft: '#19233F',
     text: '#FFFFFF',
-    textMuted: '#B2BAD0',
-    primary: '#CBB8FF',
-    primaryText: '#0B1020',
-    accent: '#F3D69B',
+    textMuted: '#B3BDD6',
+    textSubtle: '#8B96B2',
+    primary: '#CDBAFF',
+    primaryText: '#0A1020',
+    accent: '#F4D694',
     border: 'rgba(255,255,255,0.08)',
-    success: '#1D7D58',
-    successText: '#ECFFF5',
-    lockedOverlay: 'rgba(5,10,20,0.42)',
-  },
+    success: '#1E7F5D',
+    successText: '#EEFFF8',
+    warning: '#F7C66B',
+    shadow: 'rgba(0,0,0,0.26)',
+    lockedOverlay: 'rgba(6,10,18,0.48)'
+  }
 };
 
 const lightTheme: AppTheme = {
   mode: 'light',
   statusBar: 'dark-content',
   colors: {
-    bg: '#F4F7FB',
+    bg: '#F3F6FB',
     surface: '#FFFFFF',
-    surfaceAlt: '#EDF2F7',
-    text: '#131A2C',
-    textMuted: '#5B6478',
-    primary: '#6E56CF',
+    surfaceAlt: '#EDF3FB',
+    surfaceSoft: '#E8EFFA',
+    text: '#152038',
+    textMuted: '#5C6882',
+    textSubtle: '#77829C',
+    primary: '#7257E8',
     primaryText: '#FFFFFF',
-    accent: '#E2B85B',
-    border: 'rgba(19,26,44,0.10)',
-    success: '#1D7D58',
-    successText: '#ECFFF5',
-    lockedOverlay: 'rgba(19,26,44,0.20)',
-  },
+    accent: '#E8BE64',
+    border: 'rgba(21,32,56,0.09)',
+    success: '#1E7F5D',
+    successText: '#EEFFF8',
+    warning: '#D6A13A',
+    shadow: 'rgba(18,24,36,0.10)',
+    lockedOverlay: 'rgba(21,32,56,0.18)'
+  }
 };
 
 export function getTheme(mode: ThemeMode): AppTheme {
   return mode === 'light' ? lightTheme : darkTheme;
+}
+
+export function resolveThemeMode(preference: ThemePreference, systemScheme: string | null | undefined): ThemeMode {
+  if (preference === 'dark' || preference === 'light') {
+    return preference;
+  }
+
+  return systemScheme === 'light' ? 'light' : 'dark';
 }

@@ -22,10 +22,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '800',
+    lineHeight: 28,
   },
   caption: {
-    fontSize: 13,
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

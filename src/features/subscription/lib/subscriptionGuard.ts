@@ -1,8 +1,5 @@
 export function canOpenPremiumContent(isSubscribed: boolean, isPremium: boolean) {
-  if (!isPremium) {
-    return true;
-  }
-
+  if (!isPremium) return true;
   return isSubscribed;
 }
 

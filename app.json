@@ -2,9 +2,20 @@
   "expo": {
     "name": "ZenPulse",
     "slug": "zenpulse-production-app",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": ["en", "ru", "de"],
+            "android": ["en", "ru", "de"]
+          }
+        }
+      ]
+    ]
   }
 }
