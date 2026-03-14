@@ -61,6 +61,7 @@ export default function PreferencesScreen() {
                     isSelected={isSelected}
                     statusText={isSelected ? t.common.selected : undefined}
                     compact
+                    showSelectionIndicator
                   />
                 </View>
               );
@@ -86,6 +87,7 @@ export default function PreferencesScreen() {
                     isSelected={isSelected}
                     statusText={isSelected ? t.common.selected : undefined}
                     compact
+                    showSelectionIndicator
                   />
                 </View>
               );
@@ -108,6 +110,7 @@ export default function PreferencesScreen() {
                 isSelected={regionPreference === 'system'}
                 statusText={regionPreference === 'system' ? t.common.selected : undefined}
                 compact
+                showSelectionIndicator
               />
             </View>
 
@@ -122,6 +125,7 @@ export default function PreferencesScreen() {
                     isSelected={isSelected}
                     statusText={isSelected ? t.common.selected : undefined}
                     compact
+                    showSelectionIndicator
                   />
                 </View>
               );

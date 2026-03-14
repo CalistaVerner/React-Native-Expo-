@@ -15,8 +15,10 @@ export const sessionCardStyles = StyleSheet.create({
   locked: {
     opacity: 0.96,
   },
-  pressed: {
-    transform: [{ scale: 0.988 }],
+  selected: {
+    shadowOpacity: 0.22,
+    shadowRadius: 28,
+    elevation: 8,
   },
   image: {
     ...StyleSheet.absoluteFillObject,
@@ -32,6 +34,15 @@ export const sessionCardStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: '58%',
+  },
+  selectedSheen: {
+    position: 'absolute',
+    left: -24,
+    top: -32,
+    width: '62%',
+    height: '55%',
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.14)',
   },
   content: {
     flex: 1,

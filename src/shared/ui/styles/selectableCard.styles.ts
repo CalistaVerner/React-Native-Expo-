@@ -8,9 +8,6 @@ export const selectableCardStyles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 14,
   },
-  pressablePressed: {
-    transform: [{ scale: 0.985 }],
-  },
   pressableSelected: {
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.18,
@@ -69,6 +66,9 @@ export const selectableCardStyles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '800',
+  },
+  badgeWrap: {
+    alignSelf: 'flex-start',
   },
   badge: {
     paddingHorizontal: 10,

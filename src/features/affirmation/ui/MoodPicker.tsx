@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Animated, View } from 'react-native';
 import type { AppTheme } from '../../../shared/theme/themes';
 import { SelectableCard } from '../../../shared/ui/SelectableCard';
 import { MOODS } from '../config/prompts';
@@ -29,8 +29,33 @@ export function MoodPicker({ value, onChange, labels, selectedLabel, theme }: Pr
             isSelected={isSelected}
             statusText={isSelected ? selectedLabel : undefined}
             compact
+            showSelectionIndicator
           >
-            <Text style={moodPickerStyles.emoji}>{mood.emoji}</Text>
+            {({ selectionProgress }) => (
+              <Animated.Text
+                style={[
+                  moodPickerStyles.emoji,
+                  {
+                    transform: [
+                      {
+                        scale: selectionProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 1.1],
+                        }),
+                      },
+                      {
+                        rotate: selectionProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ['0deg', '-6deg'],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                {mood.emoji}
+              </Animated.Text>
+            )}
           </SelectableCard>
         );
       })}

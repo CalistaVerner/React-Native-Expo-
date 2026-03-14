@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useAppContext } from '../app/state/AppContext';
 import { generateAffirmation } from '../features/affirmation/lib/generateAffirmation';
@@ -14,6 +14,8 @@ import { SurfaceCard } from '../shared/ui/SurfaceCard';
 import { meditationsStyles } from './styles/meditations.styles';
 
 export default function MeditationsScreen() {
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+
   const {
     theme,
     t,
@@ -142,11 +144,14 @@ export default function MeditationsScreen() {
               locked={locked}
               lockedLabel={t.meditations.lockedSession}
               openLabel={t.meditations.openSession}
+              selectedLabel={t.common.selected}
+              isSelected={!locked && selectedSessionId === item.id}
               onPress={() => {
                 if (target === 'paywall') {
                   setScreen('paywall');
                   return;
                 }
+                setSelectedSessionId(item.id);
                 setGeneratedText(`${t.common.sessionOpenedPrefix}: ${item.title}. ${t.common.sessionOpenedSuffix}`);
               }}
             />

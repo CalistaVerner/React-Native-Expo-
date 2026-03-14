@@ -1,7 +1,13 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Animated, Text, View } from 'react-native';
 import type { AppTheme } from '../theme/themes';
+import { AnimatedSelectableSurface } from './AnimatedSelectableSurface';
 import { selectableCardStyles } from './styles/selectableCard.styles';
+
+type AnimatedChildrenRenderState = {
+  selectionProgress: Animated.Value;
+  pressProgress: Animated.Value;
+};
 
 type Props = {
   title: string;
@@ -13,7 +19,8 @@ type Props = {
   badgeText?: string;
   accessoryText?: string;
   compact?: boolean;
-  children?: React.ReactNode;
+  showSelectionIndicator?: boolean;
+  children?: React.ReactNode | ((state: AnimatedChildrenRenderState) => React.ReactNode);
 };
 
 export function SelectableCard({
@@ -26,80 +33,125 @@ export function SelectableCard({
   badgeText,
   accessoryText,
   compact = false,
+  showSelectionIndicator = false,
   children,
 }: Props) {
   return (
-    <Pressable
+    <AnimatedSelectableSurface
+      theme={theme}
       onPress={onPress}
-      accessibilityRole="button"
-      accessibilityState={{ selected: isSelected }}
-      style={({ pressed }) => [
+      isSelected={isSelected}
+      borderRadius={compact ? 18 : 20}
+      showSelectionIndicator={showSelectionIndicator}
+      style={[
         selectableCardStyles.pressableBase,
         compact && selectableCardStyles.pressableCompact,
         {
           borderColor: isSelected ? theme.colors.primary : theme.colors.border,
           backgroundColor: isSelected ? theme.colors.surfaceSoft : theme.colors.surfaceAlt,
-          shadowColor: isSelected ? theme.colors.primary : theme.colors.shadow,
         },
-        isSelected && selectableCardStyles.pressableSelected,
-        pressed && selectableCardStyles.pressablePressed,
       ]}
+      selectedTintOpacity={theme.mode === 'dark' ? 0.1 : 0.08}
+      selectedStyle={isSelected ? selectableCardStyles.pressableSelected : undefined}
     >
-      <View style={selectableCardStyles.content}>
-        <View style={selectableCardStyles.header}>
-          <View style={selectableCardStyles.titleWrap}>
-            <Text style={[selectableCardStyles.title, { color: theme.colors.text }]}>{title}</Text>
-            {description ? (
-              <Text style={[selectableCardStyles.description, { color: theme.colors.textMuted }]}>{description}</Text>
-            ) : null}
-          </View>
+      {({ selectionProgress, pressProgress }) => (
+        <View style={selectableCardStyles.content}>
+          <View style={selectableCardStyles.header}>
+            <View style={selectableCardStyles.titleWrap}>
+              <Text style={[selectableCardStyles.title, { color: theme.colors.text }]}>{title}</Text>
+              {description ? (
+                <Text style={[selectableCardStyles.description, { color: theme.colors.textMuted }]}>{description}</Text>
+              ) : null}
+            </View>
 
-          {badgeText ? (
-            <Text
-              style={[
-                selectableCardStyles.badge,
-                {
-                  color: isSelected ? theme.colors.primaryText : theme.colors.text,
-                  backgroundColor: isSelected ? theme.colors.primary : theme.colors.surface,
-                },
-              ]}
-            >
-              {badgeText}
-            </Text>
-          ) : null}
-        </View>
-
-        {children}
-
-        {(statusText || accessoryText) ? (
-          <View style={selectableCardStyles.footer}>
-            {statusText ? (
-              <View style={selectableCardStyles.statusWrap}>
-                <View
-                  style={[
-                    selectableCardStyles.statusDot,
-                    { backgroundColor: isSelected ? theme.colors.primary : theme.colors.textSubtle },
-                  ]}
-                />
+            {badgeText ? (
+              <Animated.View
+                style={[
+                  selectableCardStyles.badgeWrap,
+                  {
+                    transform: [
+                      {
+                        scale: selectionProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 1.04],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
                 <Text
                   style={[
-                    selectableCardStyles.statusText,
-                    { color: isSelected ? theme.colors.primary : theme.colors.textSubtle },
+                    selectableCardStyles.badge,
+                    {
+                      color: isSelected ? theme.colors.primaryText : theme.colors.text,
+                      backgroundColor: isSelected ? theme.colors.primary : theme.colors.surface,
+                    },
                   ]}
                 >
-                  {statusText}
+                  {badgeText}
                 </Text>
-              </View>
-            ) : (
-              <View />
-            )}
-
-            {accessoryText ? (
-              <Text style={[selectableCardStyles.accessory, { color: theme.colors.textMuted }]}>{accessoryText}</Text>
+              </Animated.View>
             ) : null}
           </View>
-        ) : null}
-      </View>
-    </Pressable>
+
+          {children ? (
+            <Animated.View
+              style={{
+                transform: [
+                  {
+                    scale: selectionProgress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 1.02],
+                    }),
+                  },
+                ],
+              }}
+            >
+              {typeof children === 'function' ? children({ selectionProgress, pressProgress }) : children}
+            </Animated.View>
+          ) : null}
+
+          {(statusText || accessoryText) ? (
+            <View style={selectableCardStyles.footer}>
+              {statusText ? (
+                <View style={selectableCardStyles.statusWrap}>
+                  <Animated.View
+                    style={[
+                      selectableCardStyles.statusDot,
+                      {
+                        backgroundColor: isSelected ? theme.colors.primary : theme.colors.textSubtle,
+                        transform: [
+                          {
+                            scale: selectionProgress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [1, 1.18],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                  <Text
+                    style={[
+                      selectableCardStyles.statusText,
+                      { color: isSelected ? theme.colors.primary : theme.colors.textSubtle },
+                    ]}
+                  >
+                    {statusText}
+                  </Text>
+                </View>
+              ) : (
+                <View />
+              )}
+
+              {accessoryText ? (
+                <Text style={[selectableCardStyles.accessory, { color: theme.colors.textMuted }]}>{accessoryText}</Text>
+              ) : null}
+            </View>
+          ) : null}
+        </View>
+      )}
+    </AnimatedSelectableSurface>
   );
 }
