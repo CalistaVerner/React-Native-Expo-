@@ -9,8 +9,12 @@ export const moodPickerStyles = StyleSheet.create({
   cell: {
     flex: 1,
   },
-  emoji: {
-    fontSize: 28,
-    lineHeight: 32,
+  iconWrap: {
+    width: 42,
+    height: 42,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
 });

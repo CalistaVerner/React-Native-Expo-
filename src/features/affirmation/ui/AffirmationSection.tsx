@@ -57,7 +57,7 @@ export function AffirmationSection({
         theme={theme}
         variant="soft"
         disabled={isGenerating}
-        leftAdornment="🪷"
+        leftIcon="star"
       />
 
       <View style={affirmationSectionStyles.panelStack}>

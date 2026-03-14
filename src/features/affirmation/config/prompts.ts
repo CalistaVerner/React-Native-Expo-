@@ -2,9 +2,9 @@ import type { Language } from '../../../shared/i18n';
 import type { MoodId, MoodOption } from '../model/types';
 
 export const MOODS: MoodOption[] = [
-  { id: 'calm', emoji: '😌' },
-  { id: 'neutral', emoji: '🙂' },
-  { id: 'stressed', emoji: '😣' },
+  { id: 'calm', icon: 'moon' },
+  { id: 'neutral', icon: 'compass' },
+  { id: 'stressed', icon: 'bolt' },
 ];
 
 type LanguageAffirmationMap = Record<Language, Record<MoodId, string[]>>;

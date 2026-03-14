@@ -81,6 +81,11 @@ export const sessionCardStyles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 8,
   },
+  hintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   hint: {
     color: IMAGE_TEXT_MUTED,
     fontSize: 13,

@@ -53,17 +53,17 @@ export function AffirmationComposerCard({
         theme={theme}
         variant="soft"
         disabled={isGenerating}
-        leftAdornment="🪷"
+        leftIcon="star"
       />
 
-      <InfoPanel theme={theme} title={t.meditations.aiResultEyebrow} icon="✨">
+      <InfoPanel theme={theme} title={t.meditations.aiResultEyebrow} icon="star">
         <Text style={[affirmationComposerCardStyles.resultText, { color: theme.colors.text }]}> 
           {affirmationText || t.meditations.aiPlaceholder}
         </Text>
       </InfoPanel>
 
       {!!promptText && (
-        <InfoPanel theme={theme} title={t.common.mockPrompt} icon="⌘" variant="subtle">
+        <InfoPanel theme={theme} title={t.common.mockPrompt} icon="terminal" variant="subtle">
           <Text style={[affirmationComposerCardStyles.promptText, { color: theme.colors.textMuted }]}>{promptText}</Text>
         </InfoPanel>
       )}

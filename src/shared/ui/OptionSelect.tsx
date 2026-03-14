@@ -2,6 +2,7 @@ import React from 'react';
 import { Animated, Text, View } from 'react-native';
 import type { DimensionValue } from 'react-native';
 import type { AppTheme } from '../theme/themes';
+import { AppIcon, type AppIconName } from './AppIcon';
 import { AnimatedSelectableSurface } from './AnimatedSelectableSurface';
 import { optionSelectStyles } from './styles/optionSelect.styles';
 
@@ -9,7 +10,7 @@ export type OptionSelectOption<T extends string> = {
   value: T;
   title: string;
   description?: string;
-  icon?: React.ReactNode;
+  icon?: AppIconName | React.ReactNode;
   badgeText?: string;
   metaText?: string;
   disabled?: boolean;
@@ -82,7 +83,7 @@ export function OptionSelect<T extends string>({
                           optionSelectStyles.iconWrap,
                           isGrid && optionSelectStyles.iconWrapGrid,
                           {
-                            backgroundColor: isSelected ? theme.colors.surface : theme.colors.surface,
+                            backgroundColor: theme.colors.surface,
                             borderColor: isSelected ? theme.colors.primary : theme.colors.border,
                             transform: [
                               {
@@ -102,7 +103,11 @@ export function OptionSelect<T extends string>({
                         ]}
                       >
                         {typeof option.icon === 'string' ? (
-                          <Text style={optionSelectStyles.iconText}>{option.icon}</Text>
+                          <AppIcon
+                            name={option.icon}
+                            size={18}
+                            color={isSelected ? theme.colors.primary : theme.colors.textMuted}
+                          />
                         ) : (
                           option.icon
                         )}
@@ -169,9 +174,7 @@ export function OptionSelect<T extends string>({
                         },
                       ]}
                     >
-                      <Text style={[optionSelectStyles.checkMark, { color: isSelected ? theme.colors.primaryText : 'transparent' }]}>
-                        ✓
-                      </Text>
+                      {isSelected ? <AppIcon name="check" size={11} color={theme.colors.primaryText} /> : null}
                     </Animated.View>
                   </View>
 

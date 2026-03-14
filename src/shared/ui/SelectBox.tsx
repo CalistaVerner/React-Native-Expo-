@@ -7,17 +7,15 @@ import {
   Text,
   View,
 } from 'react-native';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import type { AppTheme } from '../theme/themes';
+import { AppIcon, type AppIconName } from './AppIcon';
 import { selectBoxStyles } from './styles/selectBox.styles';
-
-type FontAwesomeName = React.ComponentProps<typeof FontAwesome6>['name'];
 
 type IconTone = 'primary' | 'accent' | 'success' | 'muted';
 
 export type SelectBoxIconSpec = {
   family?: 'fa6';
-  name: FontAwesomeName;
+  name: AppIconName;
   tone?: IconTone;
   badgeLabel?: string;
 };
@@ -102,11 +100,10 @@ function SelectBoxIcon({
 
   return (
     <>
-      <FontAwesome6
+      <AppIcon
         name={icon.name}
         size={size === 'trigger' ? 20 : 18}
         color={tone.icon}
-        solid
       />
       {icon.badgeLabel ? (
         <View
@@ -270,7 +267,7 @@ export function SelectBox<T extends string>({
               },
             ]}
           >
-            <FontAwesome6 name="chevron-down" size={14} color={theme.colors.textMuted} solid />
+            <AppIcon name="chevron-down" size={14} color={theme.colors.textMuted} />
           </Animated.View>
         </View>
       </Pressable>
@@ -316,7 +313,7 @@ export function SelectBox<T extends string>({
                 ]}
                 accessibilityRole="button"
               >
-                <FontAwesome6 name="xmark" size={15} color={theme.colors.text} solid />
+                <AppIcon name="xmark" size={15} color={theme.colors.text} />
               </Pressable>
             </View>
 
@@ -398,7 +395,7 @@ export function SelectBox<T extends string>({
                         ]}
                       >
                         {isSelected ? (
-                          <FontAwesome6 name="check" size={11} color={theme.colors.primaryText} solid />
+                          <AppIcon name="check" size={11} color={theme.colors.primaryText} />
                         ) : null}
                       </View>
                     </View>

@@ -21,9 +21,8 @@ export const animatedSelectableSurfaceStyles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 4,
   },
-  indicatorText: {
-    fontSize: 13,
-    lineHeight: 14,
-    fontWeight: '900',
+  indicatorIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { Pressable, Text, View } from 'react-native';
 import type { AppTheme } from '../theme/themes';
+import { AppIcon, type AppIconName } from './AppIcon';
+import { buttonStyles } from './styles/button.styles';
 
 type Props = {
   title: string;
@@ -10,7 +11,7 @@ type Props = {
   variant?: 'primary' | 'secondary' | 'soft';
   disabled?: boolean;
   leftAdornment?: string;
-  leftIconName?: React.ComponentProps<typeof FontAwesome5>['name'];
+  leftIcon?: AppIconName;
 };
 
 export function Button({
@@ -20,11 +21,11 @@ export function Button({
   variant = 'primary',
   disabled = false,
   leftAdornment,
-  leftIconName,
+  leftIcon,
 }: Props) {
   const isPrimary = variant === 'primary';
   const isSoft = variant === 'soft';
-  const foregroundColor = isPrimary ? theme.colors.primaryText : theme.colors.text;
+  const contentColor = isPrimary ? theme.colors.primaryText : theme.colors.text;
 
   return (
     <Pressable
@@ -32,58 +33,24 @@ export function Button({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ disabled }}
-      style={[
-        styles.button,
+      style={({ pressed }) => [
+        buttonStyles.button,
         isPrimary
           ? { backgroundColor: theme.colors.primary, shadowColor: theme.colors.shadow }
           : isSoft
             ? { backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border }
             : { borderWidth: 1, borderColor: theme.colors.border, backgroundColor: 'transparent' },
-        disabled && styles.disabled,
+        disabled && buttonStyles.disabled,
+        pressed && !disabled && buttonStyles.pressed,
       ]}
     >
-      <View style={styles.inline}>
-        {leftIconName ? (
-          <FontAwesome5 name={leftIconName} size={15} color={foregroundColor} solid style={styles.icon} />
-        ) : leftAdornment ? (
-          <Text style={[styles.adornment, { color: foregroundColor }]}>{leftAdornment}</Text>
+      <View style={buttonStyles.inline}>
+        {leftIcon ? <AppIcon name={leftIcon} size={15} color={contentColor} /> : null}
+        {!leftIcon && leftAdornment ? (
+          <Text style={[buttonStyles.adornment, { color: contentColor }]}>{leftAdornment}</Text>
         ) : null}
-        <Text style={[styles.text, { color: foregroundColor }]}>{title}</Text>
+        <Text style={[buttonStyles.text, { color: contentColor }]}>{title}</Text>
       </View>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    minHeight: 56,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 18,
-    elevation: 2,
-  },
-  inline: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  text: {
-    fontSize: 15,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  adornment: {
-    fontSize: 15,
-  },
-  icon: {
-    width: 18,
-    textAlign: 'center',
-  },
-  disabled: {
-    opacity: 0.55,
-  },
-});
