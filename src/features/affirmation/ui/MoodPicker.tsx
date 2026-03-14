@@ -1,66 +1,63 @@
 import React from 'react';
-import { Animated, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { AppTheme } from '../../../shared/theme/themes';
-import { SelectableCard } from '../../../shared/ui/SelectableCard';
 import { MOODS } from '../config/prompts';
 import type { MoodId } from '../model/types';
-import { moodPickerStyles } from './styles/moodPicker.styles';
 
 type Props = {
   value: MoodId;
   onChange: (mood: MoodId) => void;
   labels: Record<MoodId, string>;
-  selectedLabel: string;
   theme: AppTheme;
 };
 
-export function MoodPicker({ value, onChange, labels, selectedLabel, theme }: Props) {
+export function MoodPicker({ value, onChange, labels, theme }: Props) {
   return (
-    <View style={moodPickerStyles.row}>
+    <View style={styles.row}>
       {MOODS.map((mood) => {
-        const isSelected = mood.id === value;
+        const active = mood.id === value;
 
         return (
-          <View key={mood.id} style={moodPickerStyles.cell}>
-            <SelectableCard
-              title={labels[mood.id]}
-              theme={theme}
-              onPress={() => onChange(mood.id)}
-              isSelected={isSelected}
-              statusText={isSelected ? selectedLabel : undefined}
-              compact
-              layout="tile"
-              selectionStyle="inline"
-            >
-              {({ selectionProgress }) => (
-                <Animated.Text
-                  style={[
-                    moodPickerStyles.emoji,
-                    {
-                      transform: [
-                        {
-                          scale: selectionProgress.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [1, 1.12],
-                          }),
-                        },
-                        {
-                          rotate: selectionProgress.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: ['0deg', '-6deg'],
-                          }),
-                        },
-                      ],
-                    },
-                  ]}
-                >
-                  {mood.emoji}
-                </Animated.Text>
-              )}
-            </SelectableCard>
-          </View>
+          <Pressable
+            key={mood.id}
+            onPress={() => onChange(mood.id)}
+            style={[
+              styles.button,
+              { backgroundColor: theme.colors.surfaceAlt, borderColor: theme.colors.border },
+              active && { borderColor: theme.colors.primary, backgroundColor: theme.colors.surface },
+            ]}
+          >
+            <Text style={styles.emoji}>{mood.emoji}</Text>
+            <Text style={[styles.label, { color: theme.colors.text }]}>{labels[mood.id]}</Text>
+          </Pressable>
         );
       })}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 16,
+  },
+  button: {
+    flex: 1,
+    minHeight: 88,
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  emoji: {
+    fontSize: 26,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 8,
+  },
+});

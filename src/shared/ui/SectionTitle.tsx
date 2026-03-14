@@ -1,7 +1,6 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import type { AppTheme } from '../theme/themes';
-import { sectionTitleStyles } from './styles/sectionTitle.styles';
 
 type Props = {
   title: string;
@@ -11,9 +10,24 @@ type Props = {
 
 export function SectionTitle({ title, caption, theme }: Props) {
   return (
-    <View style={sectionTitleStyles.wrap}>
-      <Text style={[sectionTitleStyles.title, { color: theme.colors.text }]}>{title}</Text>
-      {caption ? <Text style={[sectionTitleStyles.caption, { color: theme.colors.textMuted }]}>{caption}</Text> : null}
+    <View style={styles.wrap}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>
+      {caption ? <Text style={[styles.caption, { color: theme.colors.textMuted }]}>{caption}</Text> : null}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: {
+    gap: 6,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '800',
+    lineHeight: 28,
+  },
+  caption: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+});

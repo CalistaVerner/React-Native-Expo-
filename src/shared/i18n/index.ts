@@ -4,18 +4,7 @@ import { ru } from './dictionaries/ru';
 
 export type Language = 'en' | 'ru' | 'de';
 export type LanguagePreference = 'system' | Language;
-
-type DeepDictionary<T> = {
-  [K in keyof T]: T[K] extends string
-    ? string
-    : T[K] extends readonly unknown[]
-      ? readonly string[]
-      : T[K] extends object
-        ? DeepDictionary<T[K]>
-        : T[K];
-};
-
-export type Dictionary = DeepDictionary<typeof en>;
+export type Dictionary = typeof en;
 
 const DICTIONARIES: Record<Language, Dictionary> = {
   en,
