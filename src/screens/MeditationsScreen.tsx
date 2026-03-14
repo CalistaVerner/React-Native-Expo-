@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
 import { useAppContext } from '../app/state/AppContext';
 import { generateAffirmation } from '../features/affirmation/lib/generateAffirmation';
-import { AffirmationComposerCard } from '../features/affirmation/ui/AffirmationComposerCard';
-import { SESSIONS } from '../features/meditations/config/sessions';
-import { SessionCard } from '../features/meditations/ui/SessionCard';
-import { resolvePremiumNavigation } from '../features/subscription/lib/subscriptionGuard';
-import { Screen } from '../shared/ui/Screen';
-import { SectionTitle } from '../shared/ui/SectionTitle';
+import { AffirmationSection } from '../features/affirmation/ui/AffirmationSection';
+import { SESSIONS, type Session } from '../features/meditations/config/sessions';
+import { MeditationLibrarySection } from '../features/meditations/ui/MeditationLibrarySection';
+import { MeditationsIntroSection } from '../features/meditations/ui/MeditationsIntroSection';
 import { AnimatedEntrance } from '../shared/ui/AnimatedEntrance';
-import { meditationsStyles } from './styles/meditations.styles';
-import { WelcomeSummaryCard } from '../features/meditations/ui/WelcomeSummaryCard';
+import { Screen } from '../shared/ui/Screen';
+import { SectionDivider } from '../shared/ui/SectionDivider';
 
 export default function MeditationsScreen() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
@@ -22,8 +19,8 @@ export default function MeditationsScreen() {
     setScreen,
     selectedMood,
     setSelectedMood,
-    affirmationText,
-    setAffirmationText,
+    generatedText,
+    setGeneratedText,
     lastPrompt,
     setLastPrompt,
     isGenerating,
@@ -38,83 +35,59 @@ export default function MeditationsScreen() {
     setIsGenerating(true);
     try {
       const result = await generateAffirmation(language, selectedMood);
-      setAffirmationText(result.text);
+      setGeneratedText(result.text);
       setLastPrompt(result.prompt);
     } finally {
       setIsGenerating(false);
     }
   };
 
+  const handleSessionPress = (session: Session) => {
+    setSelectedSessionId(session.id);
+  };
+
   return (
     <Screen theme={theme}>
       <AnimatedEntrance delay={40}>
-        <View style={meditationsStyles.topBar}>
-          <View style={meditationsStyles.topBarTextWrap}>
-            <Text style={[meditationsStyles.title, { color: theme.colors.text }]}>{t.meditations.title}</Text>
-            <Text style={[meditationsStyles.subtitle, { color: theme.colors.textMuted }]}>
-              {isSubscribed ? t.meditations.premiumUnlocked : t.meditations.freeMode}
-            </Text>
-          </View>
-
-          <Pressable
-            onPress={() => setScreen('preferences')}
-            style={({ pressed }) => [
-              meditationsStyles.settingsButton,
-              { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceSoft },
-              pressed && { transform: [{ scale: 0.985 }] },
-            ]}
-          >
-            <Text style={[meditationsStyles.settingsText, { color: theme.colors.text }]}>{t.nav.openSettings}</Text>
-          </Pressable>
-        </View>
-      </AnimatedEntrance>
-
-      <AnimatedEntrance delay={110}>
-        <WelcomeSummaryCard theme={theme} t={t} regionCode={regionCode} isSubscribed={isSubscribed} />
-      </AnimatedEntrance>
-
-      <AnimatedEntrance delay={180}>
-        <AffirmationComposerCard
+        <MeditationsIntroSection
           theme={theme}
           t={t}
-          selectedMood={selectedMood}
-          onMoodChange={setSelectedMood}
-          onGenerate={handleGenerate}
-          isGenerating={isGenerating}
-          affirmationText={affirmationText}
-          promptText={lastPrompt}
+          isSubscribed={isSubscribed}
+          regionCode={regionCode}
+          onOpenSettings={() => setScreen('preferences')}
         />
       </AnimatedEntrance>
 
-      <AnimatedEntrance delay={240}>
-        <SectionTitle title={t.meditations.featured} caption={t.meditations.featuredCaption} theme={theme} />
+      <AnimatedEntrance delay={115}>
+        <SectionDivider theme={theme} label={t.meditations.aiDividerLabel} />
       </AnimatedEntrance>
 
-      {SESSIONS.map((item, index) => {
-        const target = resolvePremiumNavigation(isSubscribed, item.premium);
-        const locked = target === 'paywall';
+      <AnimatedEntrance delay={165}>
+        <AffirmationSection
+          theme={theme}
+          t={t}
+          selectedMood={selectedMood}
+          onChangeMood={setSelectedMood}
+          onGenerate={handleGenerate}
+          isGenerating={isGenerating}
+          affirmationText={generatedText}
+          lastPrompt={lastPrompt}
+        />
+      </AnimatedEntrance>
 
-        return (
-          <AnimatedEntrance key={item.id} delay={300 + index * 55}>
-            <SessionCard
-              item={item}
-              theme={theme}
-              locked={locked}
-              lockedLabel={t.meditations.lockedSession}
-              openLabel={t.meditations.openSession}
-              selectedLabel={t.common.selected}
-              isSelected={!locked && selectedSessionId === item.id}
-              onPress={() => {
-                if (target === 'paywall') {
-                  setScreen('paywall');
-                  return;
-                }
-                setSelectedSessionId(item.id);
-              }}
-            />
-          </AnimatedEntrance>
-        );
-      })}
+      <AnimatedEntrance delay={235}>
+        <SectionDivider theme={theme} label={t.meditations.libraryDividerLabel} />
+      </AnimatedEntrance>
+
+      <MeditationLibrarySection
+        theme={theme}
+        t={t}
+        sessions={SESSIONS}
+        selectedSessionId={selectedSessionId}
+        isSubscribed={isSubscribed}
+        onSessionPress={handleSessionPress}
+        onLockedSessionPress={() => setScreen('paywall')}
+      />
     </Screen>
   );
 }
