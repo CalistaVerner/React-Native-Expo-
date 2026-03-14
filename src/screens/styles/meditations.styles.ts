@@ -31,11 +31,20 @@ export const meditationsStyles = StyleSheet.create({
     fontWeight: '800',
   },
   welcomeCard: {
-    borderRadius: 28,
-    padding: 20,
-    borderWidth: 1,
+    gap: 16,
+  },
+  welcomeAccentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  welcomeAccent: {
+    width: 12,
+    height: 42,
+    borderRadius: 999,
   },
   welcomeTitle: {
+    flex: 1,
     fontSize: 24,
     lineHeight: 30,
     fontWeight: '900',
@@ -43,13 +52,11 @@ export const meditationsStyles = StyleSheet.create({
   welcomeText: {
     fontSize: 14,
     lineHeight: 20,
-    marginTop: 8,
   },
   quickMeta: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
-    marginTop: 16,
   },
   metaPill: {
     borderRadius: 999,
@@ -61,9 +68,6 @@ export const meditationsStyles = StyleSheet.create({
     fontWeight: '800',
   },
   aiCard: {
-    borderRadius: 26,
-    padding: 18,
-    borderWidth: 1,
     gap: 16,
   },
   output: {

@@ -9,6 +9,8 @@ import { resolvePremiumNavigation } from '../features/subscription/lib/subscript
 import { Button } from '../shared/ui/Button';
 import { Screen } from '../shared/ui/Screen';
 import { SectionTitle } from '../shared/ui/SectionTitle';
+import { AnimatedEntrance } from '../shared/ui/AnimatedEntrance';
+import { SurfaceCard } from '../shared/ui/SurfaceCard';
 import { meditationsStyles } from './styles/meditations.styles';
 
 export default function MeditationsScreen() {
@@ -44,99 +46,111 @@ export default function MeditationsScreen() {
 
   return (
     <Screen theme={theme}>
-      <View style={meditationsStyles.topBar}>
-        <View style={meditationsStyles.topBarTextWrap}>
-          <Text style={[meditationsStyles.title, { color: theme.colors.text }]}>{t.meditations.title}</Text>
-          <Text style={[meditationsStyles.subtitle, { color: theme.colors.textMuted }]}>
-            {isSubscribed ? t.meditations.premiumUnlocked : t.meditations.freeMode}
-          </Text>
-        </View>
-
-        <Pressable
-          onPress={() => setScreen('preferences')}
-          style={({ pressed }) => [
-            meditationsStyles.settingsButton,
-            { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt },
-            pressed && { transform: [{ scale: 0.985 }] },
-          ]}
-        >
-          <Text style={[meditationsStyles.settingsText, { color: theme.colors.text }]}>{t.nav.openSettings}</Text>
-        </Pressable>
-      </View>
-
-      <View style={[meditationsStyles.welcomeCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[meditationsStyles.welcomeTitle, { color: theme.colors.text }]}>{t.meditations.welcome}</Text>
-        <Text style={[meditationsStyles.welcomeText, { color: theme.colors.textMuted }]}>{t.meditations.settingsHint}</Text>
-        <View style={meditationsStyles.quickMeta}>
-          <View style={[meditationsStyles.metaPill, { backgroundColor: theme.colors.surfaceAlt }]}> 
-            <Text style={[meditationsStyles.metaPillText, { color: theme.colors.text }]}>{t.regions[regionCode]}</Text>
-          </View>
-          <View style={[meditationsStyles.metaPill, { backgroundColor: isSubscribed ? theme.colors.success : theme.colors.surfaceAlt }]}> 
-            <Text style={[meditationsStyles.metaPillText, { color: isSubscribed ? theme.colors.successText : theme.colors.text }]}>
-              {isSubscribed ? t.meditations.premium : t.meditations.upgrade}
+      <AnimatedEntrance delay={40}>
+        <View style={meditationsStyles.topBar}>
+          <View style={meditationsStyles.topBarTextWrap}>
+            <Text style={[meditationsStyles.title, { color: theme.colors.text }]}>{t.meditations.title}</Text>
+            <Text style={[meditationsStyles.subtitle, { color: theme.colors.textMuted }]}>
+              {isSubscribed ? t.meditations.premiumUnlocked : t.meditations.freeMode}
             </Text>
           </View>
+
+          <Pressable
+            onPress={() => setScreen('preferences')}
+            style={({ pressed }) => [
+              meditationsStyles.settingsButton,
+              { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceSoft },
+              pressed && { transform: [{ scale: 0.985 }] },
+            ]}
+          >
+            <Text style={[meditationsStyles.settingsText, { color: theme.colors.text }]}>{t.nav.openSettings}</Text>
+          </Pressable>
         </View>
-      </View>
+      </AnimatedEntrance>
 
-      <View style={[meditationsStyles.aiCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <SectionTitle title={t.meditations.aiEyebrow} caption={t.meditations.aiTitle} theme={theme} />
-
-        <MoodPicker
-          value={selectedMood}
-          onChange={setSelectedMood}
-          theme={theme}
-          selectedLabel={t.common.selected}
-          labels={{
-            calm: t.moods.calm,
-            neutral: t.moods.neutral,
-            stressed: t.moods.stressed,
-          }}
-        />
-
-        <Button
-          title={isGenerating ? t.common.generating : t.meditations.aiButton}
-          onPress={handleGenerate}
-          theme={theme}
-          variant="soft"
-          disabled={isGenerating}
-          leftAdornment="🪷"
-        />
-
-        <View style={[meditationsStyles.output, { backgroundColor: theme.colors.surfaceAlt }]}> 
-          <Text style={[meditationsStyles.outputText, { color: theme.colors.text }]}>{generatedText || t.meditations.aiPlaceholder}</Text>
-        </View>
-
-        {!!lastPrompt && (
-          <View style={[meditationsStyles.promptBox, { backgroundColor: theme.colors.surfaceAlt }]}> 
-            <Text style={[meditationsStyles.promptLabel, { color: theme.colors.primary }]}>{t.common.mockPrompt}</Text>
-            <Text style={[meditationsStyles.promptText, { color: theme.colors.textMuted }]}>{lastPrompt}</Text>
+      <AnimatedEntrance delay={110}>
+        <SurfaceCard theme={theme} variant="hero" style={meditationsStyles.welcomeCard}>
+          <View style={meditationsStyles.welcomeAccentRow}>
+            <View style={[meditationsStyles.welcomeAccent, { backgroundColor: theme.mode === 'dark' ? 'rgba(244,214,148,0.16)' : 'rgba(232,190,100,0.14)' }]} />
+            <Text style={[meditationsStyles.welcomeTitle, { color: theme.colors.text }]}>{t.meditations.welcome}</Text>
           </View>
-        )}
-      </View>
+          <Text style={[meditationsStyles.welcomeText, { color: theme.colors.textMuted }]}>{t.meditations.settingsHint}</Text>
+          <View style={meditationsStyles.quickMeta}>
+            <View style={[meditationsStyles.metaPill, { backgroundColor: theme.colors.surfaceSoft }]}> 
+              <Text style={[meditationsStyles.metaPillText, { color: theme.colors.text }]}>{t.regions[regionCode]}</Text>
+            </View>
+            <View style={[meditationsStyles.metaPill, { backgroundColor: isSubscribed ? theme.colors.success : theme.colors.surfaceSoft }]}> 
+              <Text style={[meditationsStyles.metaPillText, { color: isSubscribed ? theme.colors.successText : theme.colors.text }]}> 
+                {isSubscribed ? t.meditations.premium : t.meditations.upgrade}
+              </Text>
+            </View>
+          </View>
+        </SurfaceCard>
+      </AnimatedEntrance>
 
-      <SectionTitle title={t.meditations.featured} caption={t.meditations.featuredCaption} theme={theme} />
+      <AnimatedEntrance delay={180}>
+        <SurfaceCard theme={theme} style={meditationsStyles.aiCard}>
+          <SectionTitle title={t.meditations.aiEyebrow} caption={t.meditations.aiTitle} theme={theme} />
 
-      {SESSIONS.map((item) => {
+          <MoodPicker
+            value={selectedMood}
+            onChange={setSelectedMood}
+            theme={theme}
+            selectedLabel={t.common.selected}
+            labels={{
+              calm: t.moods.calm,
+              neutral: t.moods.neutral,
+              stressed: t.moods.stressed,
+            }}
+          />
+
+          <Button
+            title={isGenerating ? t.common.generating : t.meditations.aiButton}
+            onPress={handleGenerate}
+            theme={theme}
+            variant="soft"
+            disabled={isGenerating}
+            leftAdornment="🪷"
+          />
+
+          <View style={[meditationsStyles.output, { backgroundColor: theme.colors.surfaceSoft }]}> 
+            <Text style={[meditationsStyles.outputText, { color: theme.colors.text }]}>{generatedText || t.meditations.aiPlaceholder}</Text>
+          </View>
+
+          {!!lastPrompt && (
+            <View style={[meditationsStyles.promptBox, { backgroundColor: theme.colors.surfaceSoft }]}> 
+              <Text style={[meditationsStyles.promptLabel, { color: theme.colors.primary }]}>{t.common.mockPrompt}</Text>
+              <Text style={[meditationsStyles.promptText, { color: theme.colors.textMuted }]}>{lastPrompt}</Text>
+            </View>
+          )}
+        </SurfaceCard>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={240}>
+        <SectionTitle title={t.meditations.featured} caption={t.meditations.featuredCaption} theme={theme} />
+      </AnimatedEntrance>
+
+      {SESSIONS.map((item, index) => {
         const target = resolvePremiumNavigation(isSubscribed, item.premium);
         const locked = target === 'paywall';
 
         return (
-          <SessionCard
-            key={item.id}
-            item={item}
-            theme={theme}
-            locked={locked}
-            lockedLabel={t.meditations.lockedSession}
-            openLabel={t.meditations.openSession}
-            onPress={() => {
-              if (target === 'paywall') {
-                setScreen('paywall');
-                return;
-              }
-              setGeneratedText(`${t.common.sessionOpenedPrefix}: ${item.title}. ${t.common.sessionOpenedSuffix}`);
-            }}
-          />
+          <AnimatedEntrance key={item.id} delay={300 + index * 55}>
+            <SessionCard
+              item={item}
+              theme={theme}
+              locked={locked}
+              lockedLabel={t.meditations.lockedSession}
+              openLabel={t.meditations.openSession}
+              onPress={() => {
+                if (target === 'paywall') {
+                  setScreen('paywall');
+                  return;
+                }
+                setGeneratedText(`${t.common.sessionOpenedPrefix}: ${item.title}. ${t.common.sessionOpenedSuffix}`);
+              }}
+            />
+          </AnimatedEntrance>
         );
       })}
     </Screen>

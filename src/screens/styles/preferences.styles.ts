@@ -2,9 +2,6 @@ import { StyleSheet } from 'react-native';
 
 export const preferencesStyles = StyleSheet.create({
   card: {
-    borderRadius: 24,
-    padding: 18,
-    borderWidth: 1,
     gap: 14,
   },
   label: {

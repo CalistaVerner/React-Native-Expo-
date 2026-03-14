@@ -17,10 +17,20 @@ export const paywallStyles = StyleSheet.create({
     fontWeight: '700',
   },
   heroCard: {
-    borderRadius: 28,
-    padding: 22,
-    borderWidth: 1,
     gap: 18,
+  },
+  heroGlowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  heroGlow: {
+    width: 12,
+    height: 40,
+    borderRadius: 999,
+  },
+  heroTextWrap: {
+    gap: 12,
   },
   eyebrow: {
     fontSize: 13,
@@ -36,7 +46,6 @@ export const paywallStyles = StyleSheet.create({
   subtitle: {
     fontSize: 15,
     lineHeight: 22,
-    marginTop: 12,
   },
   metricsRow: {
     flexDirection: 'row',
@@ -61,11 +70,20 @@ export const paywallStyles = StyleSheet.create({
   },
   benefitRow: {
     flexDirection: 'row',
-    gap: 10,
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  benefitIconWrap: {
+    width: 26,
+    height: 26,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 1,
   },
   benefitIcon: {
-    fontSize: 16,
-    marginTop: 1,
+    fontSize: 13,
+    fontWeight: '900',
   },
   benefitText: {
     flex: 1,
@@ -89,6 +107,12 @@ export const paywallStyles = StyleSheet.create({
   savings: {
     fontSize: 13,
     fontWeight: '700',
+  },
+  actionsWrap: {
+    gap: 12,
+  },
+  footnotesWrap: {
+    gap: 6,
   },
   footnote: {
     fontSize: 12,
