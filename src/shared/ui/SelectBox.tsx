@@ -7,14 +7,26 @@ import {
   Text,
   View,
 } from 'react-native';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import type { AppTheme } from '../theme/themes';
 import { selectBoxStyles } from './styles/selectBox.styles';
+
+type FontAwesomeName = React.ComponentProps<typeof FontAwesome6>['name'];
+
+type IconTone = 'primary' | 'accent' | 'success' | 'muted';
+
+export type SelectBoxIconSpec = {
+  family?: 'fa6';
+  name: FontAwesomeName;
+  tone?: IconTone;
+  badgeLabel?: string;
+};
 
 export type SelectBoxOption<T extends string> = {
   value: T;
   title: string;
   description?: string;
-  icon?: React.ReactNode;
+  icon?: SelectBoxIconSpec;
   badgeText?: string;
   metaText?: string;
   disabled?: boolean;
@@ -42,6 +54,78 @@ const CLOSE_TIMING = {
   duration: 180,
   useNativeDriver: true,
 } as const;
+
+function resolveToneColors(theme: AppTheme, tone: IconTone = 'primary', isSelected = false) {
+  if (tone === 'accent') {
+    return {
+      icon: theme.colors.accent,
+      badgeBg: isSelected ? theme.colors.accent : theme.colors.surfaceSoft,
+      badgeText: isSelected ? theme.colors.primaryText : theme.colors.text,
+    };
+  }
+
+  if (tone === 'success') {
+    return {
+      icon: theme.colors.success,
+      badgeBg: isSelected ? theme.colors.success : theme.colors.surfaceSoft,
+      badgeText: isSelected ? theme.colors.successText : theme.colors.text,
+    };
+  }
+
+  if (tone === 'muted') {
+    return {
+      icon: theme.colors.textMuted,
+      badgeBg: isSelected ? theme.colors.primary : theme.colors.surfaceSoft,
+      badgeText: isSelected ? theme.colors.primaryText : theme.colors.textMuted,
+    };
+  }
+
+  return {
+    icon: theme.colors.primary,
+    badgeBg: isSelected ? theme.colors.primary : theme.colors.surfaceSoft,
+    badgeText: isSelected ? theme.colors.primaryText : theme.colors.text,
+  };
+}
+
+function SelectBoxIcon({
+  icon,
+  theme,
+  isSelected,
+  size,
+}: {
+  icon: SelectBoxIconSpec;
+  theme: AppTheme;
+  isSelected: boolean;
+  size: 'trigger' | 'option';
+}) {
+  const tone = resolveToneColors(theme, icon.tone, isSelected);
+
+  return (
+    <>
+      <FontAwesome6
+        name={icon.name}
+        size={size === 'trigger' ? 20 : 18}
+        color={tone.icon}
+        solid
+      />
+      {icon.badgeLabel ? (
+        <View
+          style={[
+            size === 'trigger' ? selectBoxStyles.iconBadge : selectBoxStyles.optionIconBadge,
+            {
+              backgroundColor: tone.badgeBg,
+              borderColor: theme.colors.surface,
+            },
+          ]}
+        >
+          <Text style={[selectBoxStyles.iconBadgeText, { color: tone.badgeText }]}>
+            {icon.badgeLabel}
+          </Text>
+        </View>
+      ) : null}
+    </>
+  );
+}
 
 export function SelectBox<T extends string>({
   options,
@@ -140,11 +224,7 @@ export function SelectBox<T extends string>({
                 },
               ]}
             >
-              {typeof triggerIcon === 'string' ? (
-                <Text style={selectBoxStyles.iconText}>{triggerIcon}</Text>
-              ) : (
-                triggerIcon
-              )}
+              <SelectBoxIcon icon={triggerIcon} theme={theme} isSelected size="trigger" />
             </View>
           ) : null}
 
@@ -168,7 +248,8 @@ export function SelectBox<T extends string>({
                       selectBoxStyles.triggerBadge,
                       {
                         color: theme.colors.primary,
-                        backgroundColor: theme.mode === 'dark' ? theme.colors.surfaceSoft : theme.colors.surface,
+                        backgroundColor:
+                          theme.mode === 'dark' ? theme.colors.surfaceSoft : theme.colors.surface,
                       },
                     ]}
                   >
@@ -189,7 +270,7 @@ export function SelectBox<T extends string>({
               },
             ]}
           >
-            <Text style={[selectBoxStyles.chevron, { color: theme.colors.textMuted }]}>⌄</Text>
+            <FontAwesome6 name="chevron-down" size={14} color={theme.colors.textMuted} solid />
           </Animated.View>
         </View>
       </Pressable>
@@ -235,7 +316,7 @@ export function SelectBox<T extends string>({
                 ]}
                 accessibilityRole="button"
               >
-                <Text style={[selectBoxStyles.closeButtonText, { color: theme.colors.text }]}>✕</Text>
+                <FontAwesome6 name="xmark" size={15} color={theme.colors.text} solid />
               </Pressable>
             </View>
 
@@ -274,11 +355,7 @@ export function SelectBox<T extends string>({
                           },
                         ]}
                       >
-                        {typeof option.icon === 'string' ? (
-                          <Text style={selectBoxStyles.optionIconText}>{option.icon}</Text>
-                        ) : (
-                          option.icon
-                        )}
+                        <SelectBoxIcon icon={option.icon} theme={theme} isSelected={isSelected} size="option" />
                       </View>
                     ) : null}
 
@@ -320,7 +397,9 @@ export function SelectBox<T extends string>({
                           },
                         ]}
                       >
-                        <Text style={[selectBoxStyles.selectionMarkText, { color: isSelected ? theme.colors.primaryText : 'transparent' }]}>✓</Text>
+                        {isSelected ? (
+                          <FontAwesome6 name="check" size={11} color={theme.colors.primaryText} solid />
+                        ) : null}
                       </View>
                     </View>
                   </Pressable>

@@ -1,33 +1,33 @@
 import type { RegionCode, RegionPreference } from '../model/types';
 import type { Dictionary, Language, LanguagePreference } from '../../../shared/i18n';
 import type { ThemePreference } from '../../../shared/theme/themes';
-import type { SelectBoxOption } from '../../../shared/ui/SelectBox';
+import type { SelectBoxIconSpec, SelectBoxOption } from '../../../shared/ui/SelectBox';
 import { getPricingRegion } from '../../subscription/lib/pricing';
 
-const LANGUAGE_ICONS: Record<LanguagePreference, string> = {
-  system: '🌐',
-  en: '🇺🇸',
-  ru: '🇷🇺',
-  de: '🇩🇪',
+const LANGUAGE_ICONS: Record<LanguagePreference, SelectBoxIconSpec> = {
+  system: { name: 'globe', tone: 'muted', badgeLabel: 'SYS' },
+  en: { name: 'flag', tone: 'primary', badgeLabel: 'EN' },
+  ru: { name: 'flag', tone: 'primary', badgeLabel: 'RU' },
+  de: { name: 'flag', tone: 'primary', badgeLabel: 'DE' },
 };
 
-const THEME_ICONS: Record<ThemePreference, string> = {
-  system: '🖥️',
-  dark: '🌙',
-  light: '☀️',
+const THEME_ICONS: Record<ThemePreference, SelectBoxIconSpec> = {
+  system: { name: 'desktop', tone: 'muted', badgeLabel: 'SYS' },
+  dark: { name: 'moon', tone: 'primary' },
+  light: { name: 'sun', tone: 'accent' },
 };
 
-const REGION_ICONS: Record<RegionCode, string> = {
-  US: '🇺🇸',
-  DE: '🇩🇪',
-  GB: '🇬🇧',
-  RU: '🇷🇺',
-  JP: '🇯🇵',
-  IN: '🇮🇳',
-  BR: '🇧🇷',
-  CA: '🇨🇦',
-  AU: '🇦🇺',
-  KZ: '🇰🇿',
+const REGION_ICONS: Record<RegionCode, SelectBoxIconSpec> = {
+  US: { name: 'location-dot', tone: 'accent', badgeLabel: 'US' },
+  DE: { name: 'location-dot', tone: 'accent', badgeLabel: 'DE' },
+  GB: { name: 'location-dot', tone: 'accent', badgeLabel: 'GB' },
+  RU: { name: 'location-dot', tone: 'accent', badgeLabel: 'RU' },
+  JP: { name: 'location-dot', tone: 'accent', badgeLabel: 'JP' },
+  IN: { name: 'location-dot', tone: 'accent', badgeLabel: 'IN' },
+  BR: { name: 'location-dot', tone: 'accent', badgeLabel: 'BR' },
+  CA: { name: 'location-dot', tone: 'accent', badgeLabel: 'CA' },
+  AU: { name: 'location-dot', tone: 'accent', badgeLabel: 'AU' },
+  KZ: { name: 'location-dot', tone: 'accent', badgeLabel: 'KZ' },
 };
 
 export function buildLanguagePreferenceOptions(t: Dictionary, activeLanguage: Language): SelectBoxOption<LanguagePreference>[] {
@@ -84,7 +84,7 @@ export function buildRegionPreferenceOptions(
       value: 'system',
       title: t.common.system,
       description: `${t.common.current}: ${t.regions[activeRegion]}`,
-      icon: '🧭',
+      icon: { name: 'compass', tone: 'muted', badgeLabel: 'SYS' },
       badgeText: getPricingRegion(activeRegion).currency,
     },
     ...regionOptions,
