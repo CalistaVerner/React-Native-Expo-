@@ -12,15 +12,6 @@ export const preferencesStyles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  optionCell: {
-    minWidth: '48%',
-    flexGrow: 1,
-  },
   previewRow: {
     flexDirection: 'row',
     gap: 10,

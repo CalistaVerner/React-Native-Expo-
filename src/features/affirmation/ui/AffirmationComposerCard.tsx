@@ -56,7 +56,7 @@ export function AffirmationComposerCard({
         leftAdornment="🪷"
       />
 
-      <InfoPanel theme={theme} title={t.common.affirmationResultTitle} icon="✨">
+      <InfoPanel theme={theme} title={t.meditations.aiResultEyebrow} icon="✨">
         <Text style={[affirmationComposerCardStyles.resultText, { color: theme.colors.text }]}> 
           {affirmationText || t.meditations.aiPlaceholder}
         </Text>
