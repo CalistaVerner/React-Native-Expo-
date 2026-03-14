@@ -4,6 +4,7 @@ export const ru = {
     backToMeditations: 'Назад к медитациям',
   },
   common: {
+    affirmationResultTitle: 'Ваша аффирмация',
     mockPrompt: 'Мок LLM-промпта',
     generating: 'Генерация…',
     sessionOpenedPrefix: 'Открыто',

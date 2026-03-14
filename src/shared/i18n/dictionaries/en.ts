@@ -4,6 +4,7 @@ export const en = {
     backToMeditations: 'Back to meditations',
   },
   common: {
+    affirmationResultTitle: 'Your affirmation',
     mockPrompt: 'Mock LLM prompt',
     generating: 'Generating…',
     sessionOpenedPrefix: 'Opened',

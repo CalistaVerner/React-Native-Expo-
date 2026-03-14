@@ -43,8 +43,8 @@ export type AppContextValue = {
   selectedMood: MoodId;
   setSelectedMood: (mood: MoodId) => void;
 
-  generatedText: string;
-  setGeneratedText: (value: string) => void;
+  affirmationText: string;
+  setAffirmationText: (value: string) => void;
 
   lastPrompt: string;
   setLastPrompt: (value: string) => void;
@@ -79,7 +79,7 @@ export function AppContextProvider({ children }: React.PropsWithChildren) {
   const [themePreference, setThemePreference] = useState<ThemePreference>(DEFAULT_THEME_PREFERENCE);
   const [regionPreference, setRegionPreference] = useState<RegionPreference>(DEFAULT_REGION_PREFERENCE);
   const [selectedMood, setSelectedMood] = useState<MoodId>('neutral');
-  const [generatedText, setGeneratedText] = useState('');
+  const [affirmationText, setAffirmationText] = useState('');
   const [lastPrompt, setLastPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -175,8 +175,8 @@ export function AppContextProvider({ children }: React.PropsWithChildren) {
       setRegionPreference,
       selectedMood,
       setSelectedMood,
-      generatedText,
-      setGeneratedText,
+      affirmationText,
+      setAffirmationText,
       lastPrompt,
       setLastPrompt,
       isGenerating,
@@ -203,7 +203,7 @@ export function AppContextProvider({ children }: React.PropsWithChildren) {
       regionCode,
       regionPreference,
       selectedMood,
-      generatedText,
+      affirmationText,
       lastPrompt,
       isGenerating,
       deviceLocale,
