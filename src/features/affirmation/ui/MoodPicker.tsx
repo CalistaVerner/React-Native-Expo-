@@ -1,63 +1,39 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import type { AppTheme } from '../../../shared/theme/themes';
+import { SelectableCard } from '../../../shared/ui/SelectableCard';
 import { MOODS } from '../config/prompts';
 import type { MoodId } from '../model/types';
+import { moodPickerStyles } from './styles/moodPicker.styles';
 
 type Props = {
   value: MoodId;
   onChange: (mood: MoodId) => void;
   labels: Record<MoodId, string>;
+  selectedLabel: string;
   theme: AppTheme;
 };
 
-export function MoodPicker({ value, onChange, labels, theme }: Props) {
+export function MoodPicker({ value, onChange, labels, selectedLabel, theme }: Props) {
   return (
-    <View style={styles.row}>
+    <View style={moodPickerStyles.row}>
       {MOODS.map((mood) => {
-        const active = mood.id === value;
+        const isSelected = mood.id === value;
 
         return (
-          <Pressable
+          <SelectableCard
             key={mood.id}
+            title={labels[mood.id]}
+            theme={theme}
             onPress={() => onChange(mood.id)}
-            style={[
-              styles.button,
-              { backgroundColor: theme.colors.surfaceAlt, borderColor: theme.colors.border },
-              active && { borderColor: theme.colors.primary, backgroundColor: theme.colors.surface },
-            ]}
+            isSelected={isSelected}
+            statusText={isSelected ? selectedLabel : undefined}
+            compact
           >
-            <Text style={styles.emoji}>{mood.emoji}</Text>
-            <Text style={[styles.label, { color: theme.colors.text }]}>{labels[mood.id]}</Text>
-          </Pressable>
+            <Text style={moodPickerStyles.emoji}>{mood.emoji}</Text>
+          </SelectableCard>
         );
       })}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 16,
-  },
-  button: {
-    flex: 1,
-    minHeight: 88,
-    borderRadius: 18,
-    paddingVertical: 14,
-    paddingHorizontal: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  emoji: {
-    fontSize: 26,
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '700',
-    marginTop: 8,
-  },
-});

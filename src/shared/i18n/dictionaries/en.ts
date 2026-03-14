@@ -12,6 +12,7 @@ export const en = {
     restoreDefaults: 'Restore defaults',
     system: 'System',
     current: 'Current',
+    selected: 'Selected',
     loading: 'Preparing your calm space…',
   },
   languageNames: {

@@ -12,6 +12,7 @@ export const ru = {
     restoreDefaults: 'Сбросить на системные значения',
     system: 'Система',
     current: 'Текущее значение',
+    selected: 'Выбрано',
     loading: 'Подготавливаем ваше спокойное пространство…',
   },
   languageNames: {

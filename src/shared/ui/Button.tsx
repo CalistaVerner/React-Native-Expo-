@@ -1,6 +1,7 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import type { AppTheme } from '../theme/themes';
+import { buttonStyles } from './styles/button.styles';
 
 type Props = {
   title: string;
@@ -21,50 +22,25 @@ export function Button({ title, onPress, theme, variant = 'primary', disabled = 
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ disabled }}
-      style={[
-        styles.button,
+      style={({ pressed }) => [
+        buttonStyles.button,
         isPrimary
           ? { backgroundColor: theme.colors.primary, shadowColor: theme.colors.shadow }
           : isSoft
             ? { backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border }
             : { borderWidth: 1, borderColor: theme.colors.border, backgroundColor: 'transparent' },
-        disabled && styles.disabled,
+        disabled && buttonStyles.disabled,
+        pressed && !disabled && buttonStyles.pressed,
       ]}
     >
-      <View style={styles.inline}>
-        {leftAdornment ? <Text style={[styles.adornment, { color: isPrimary ? theme.colors.primaryText : theme.colors.text }]}>{leftAdornment}</Text> : null}
-        <Text style={[styles.text, { color: isPrimary ? theme.colors.primaryText : theme.colors.text }]}>{title}</Text>
+      <View style={buttonStyles.inline}>
+        {leftAdornment ? (
+          <Text style={[buttonStyles.adornment, { color: isPrimary ? theme.colors.primaryText : theme.colors.text }]}>
+            {leftAdornment}
+          </Text>
+        ) : null}
+        <Text style={[buttonStyles.text, { color: isPrimary ? theme.colors.primaryText : theme.colors.text }]}>{title}</Text>
       </View>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    minHeight: 56,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 18,
-    elevation: 2,
-  },
-  inline: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  text: {
-    fontSize: 15,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  adornment: {
-    fontSize: 15,
-  },
-  disabled: {
-    opacity: 0.55,
-  },
-});

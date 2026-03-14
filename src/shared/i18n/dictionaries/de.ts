@@ -12,6 +12,7 @@ export const de = {
     restoreDefaults: 'Auf Systemwerte zurücksetzen',
     system: 'System',
     current: 'Aktuell',
+    selected: 'Ausgewählt',
     loading: 'Dein ruhiger Raum wird vorbereitet…',
   },
   languageNames: {

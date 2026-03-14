@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useAppContext } from '../app/state/AppContext';
 import { generateAffirmation } from '../features/affirmation/lib/generateAffirmation';
 import { MoodPicker } from '../features/affirmation/ui/MoodPicker';
@@ -9,6 +9,7 @@ import { resolvePremiumNavigation } from '../features/subscription/lib/subscript
 import { Button } from '../shared/ui/Button';
 import { Screen } from '../shared/ui/Screen';
 import { SectionTitle } from '../shared/ui/SectionTitle';
+import { meditationsStyles } from './styles/meditations.styles';
 
 export default function MeditationsScreen() {
   const {
@@ -43,41 +44,49 @@ export default function MeditationsScreen() {
 
   return (
     <Screen theme={theme}>
-      <View style={styles.topBar}>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.title, { color: theme.colors.text }]}>{t.meditations.title}</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
+      <View style={meditationsStyles.topBar}>
+        <View style={meditationsStyles.topBarTextWrap}>
+          <Text style={[meditationsStyles.title, { color: theme.colors.text }]}>{t.meditations.title}</Text>
+          <Text style={[meditationsStyles.subtitle, { color: theme.colors.textMuted }]}>
             {isSubscribed ? t.meditations.premiumUnlocked : t.meditations.freeMode}
           </Text>
         </View>
 
-        <Pressable onPress={() => setScreen('preferences')} style={[styles.settingsButton, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt }]}> 
-          <Text style={[styles.settingsText, { color: theme.colors.text }]}>{t.nav.openSettings}</Text>
+        <Pressable
+          onPress={() => setScreen('preferences')}
+          style={({ pressed }) => [
+            meditationsStyles.settingsButton,
+            { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt },
+            pressed && { transform: [{ scale: 0.985 }] },
+          ]}
+        >
+          <Text style={[meditationsStyles.settingsText, { color: theme.colors.text }]}>{t.nav.openSettings}</Text>
         </Pressable>
       </View>
 
-      <View style={[styles.welcomeCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[styles.welcomeTitle, { color: theme.colors.text }]}>{t.meditations.welcome}</Text>
-        <Text style={[styles.welcomeText, { color: theme.colors.textMuted }]}>{t.meditations.settingsHint}</Text>
-        <View style={styles.quickMeta}>
-          <View style={[styles.metaPill, { backgroundColor: theme.colors.surfaceAlt }]}> 
-            <Text style={[styles.metaPillText, { color: theme.colors.text }]}>{t.regions[regionCode]}</Text>
+      <View style={[meditationsStyles.welcomeCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[meditationsStyles.welcomeTitle, { color: theme.colors.text }]}>{t.meditations.welcome}</Text>
+        <Text style={[meditationsStyles.welcomeText, { color: theme.colors.textMuted }]}>{t.meditations.settingsHint}</Text>
+        <View style={meditationsStyles.quickMeta}>
+          <View style={[meditationsStyles.metaPill, { backgroundColor: theme.colors.surfaceAlt }]}> 
+            <Text style={[meditationsStyles.metaPillText, { color: theme.colors.text }]}>{t.regions[regionCode]}</Text>
           </View>
-          <View style={[styles.metaPill, { backgroundColor: isSubscribed ? theme.colors.success : theme.colors.surfaceAlt }]}> 
-            <Text style={[styles.metaPillText, { color: isSubscribed ? theme.colors.successText : theme.colors.text }]}>
+          <View style={[meditationsStyles.metaPill, { backgroundColor: isSubscribed ? theme.colors.success : theme.colors.surfaceAlt }]}> 
+            <Text style={[meditationsStyles.metaPillText, { color: isSubscribed ? theme.colors.successText : theme.colors.text }]}>
               {isSubscribed ? t.meditations.premium : t.meditations.upgrade}
             </Text>
           </View>
         </View>
       </View>
 
-      <View style={[styles.aiCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+      <View style={[meditationsStyles.aiCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
         <SectionTitle title={t.meditations.aiEyebrow} caption={t.meditations.aiTitle} theme={theme} />
 
         <MoodPicker
           value={selectedMood}
           onChange={setSelectedMood}
           theme={theme}
+          selectedLabel={t.common.selected}
           labels={{
             calm: t.moods.calm,
             neutral: t.moods.neutral,
@@ -94,16 +103,14 @@ export default function MeditationsScreen() {
           leftAdornment="🪷"
         />
 
-        <View style={[styles.output, { backgroundColor: theme.colors.surfaceAlt }]}> 
-          <Text style={[styles.outputText, { color: theme.colors.text }]}>
-            {generatedText || t.meditations.aiPlaceholder}
-          </Text>
+        <View style={[meditationsStyles.output, { backgroundColor: theme.colors.surfaceAlt }]}> 
+          <Text style={[meditationsStyles.outputText, { color: theme.colors.text }]}>{generatedText || t.meditations.aiPlaceholder}</Text>
         </View>
 
         {!!lastPrompt && (
-          <View style={[styles.promptBox, { backgroundColor: theme.colors.surfaceAlt }]}> 
-            <Text style={[styles.promptLabel, { color: theme.colors.primary }]}>{t.common.mockPrompt}</Text>
-            <Text style={[styles.promptText, { color: theme.colors.textMuted }]}>{lastPrompt}</Text>
+          <View style={[meditationsStyles.promptBox, { backgroundColor: theme.colors.surfaceAlt }]}> 
+            <Text style={[meditationsStyles.promptLabel, { color: theme.colors.primary }]}>{t.common.mockPrompt}</Text>
+            <Text style={[meditationsStyles.promptText, { color: theme.colors.textMuted }]}>{lastPrompt}</Text>
           </View>
         )}
       </View>
@@ -135,89 +142,3 @@ export default function MeditationsScreen() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '900',
-  },
-  subtitle: {
-    fontSize: 14,
-    marginTop: 6,
-    lineHeight: 20,
-  },
-  settingsButton: {
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    alignSelf: 'flex-start',
-  },
-  settingsText: {
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  welcomeCard: {
-    borderRadius: 28,
-    padding: 20,
-    borderWidth: 1,
-  },
-  welcomeTitle: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: '900',
-  },
-  welcomeText: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 8,
-  },
-  quickMeta: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginTop: 16,
-  },
-  metaPill: {
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  metaPillText: {
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  aiCard: {
-    borderRadius: 26,
-    padding: 18,
-    borderWidth: 1,
-    gap: 16,
-  },
-  output: {
-    borderRadius: 18,
-    padding: 16,
-  },
-  outputText: {
-    fontSize: 15,
-    lineHeight: 23,
-  },
-  promptBox: {
-    padding: 14,
-    borderRadius: 16,
-  },
-  promptLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  promptText: {
-    fontSize: 12,
-    lineHeight: 18,
-  },
-});

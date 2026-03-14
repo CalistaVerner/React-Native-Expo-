@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useAppContext } from '../app/state/AppContext';
 import {
   SUPPORTED_LANGUAGE_PREFERENCES,
@@ -10,6 +10,8 @@ import type { RegionCode } from '../features/settings/model/types';
 import { Button } from '../shared/ui/Button';
 import { Screen } from '../shared/ui/Screen';
 import { SectionTitle } from '../shared/ui/SectionTitle';
+import { SelectableCard } from '../shared/ui/SelectableCard';
+import { preferencesStyles } from './styles/preferences.styles';
 
 export default function PreferencesScreen() {
   const {
@@ -36,102 +38,105 @@ export default function PreferencesScreen() {
     <Screen theme={theme}>
       <SectionTitle title={t.preferences.title} caption={t.preferences.subtitle} theme={theme} />
 
-      <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[styles.label, { color: theme.colors.text }]}>{t.preferences.language}</Text>
-        <View style={styles.grid}>
+      <View style={[preferencesStyles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[preferencesStyles.label, { color: theme.colors.text }]}>{t.preferences.language}</Text>
+        <View style={preferencesStyles.grid}>
           {SUPPORTED_LANGUAGE_PREFERENCES.map((item) => {
-            const active = item === languagePreference;
-            const label = item === 'system' ? `${t.common.system} · ${t.languageNames[language]}` : t.languageNames[item];
+            const isSelected = item === languagePreference;
+            const title = item === 'system' ? t.common.system : t.languageNames[item];
+            const description = item === 'system' ? `${t.common.current}: ${t.languageNames[language]}` : undefined;
+
             return (
-              <Pressable
-                key={item}
-                onPress={() => setLanguagePreference(item)}
-                style={[
-                  styles.option,
-                  { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt },
-                  active && { borderColor: theme.colors.primary, backgroundColor: theme.colors.surfaceSoft },
-                ]}
-              >
-                <Text style={[styles.optionText, { color: theme.colors.text }]}>{label}</Text>
-              </Pressable>
+              <View key={item} style={preferencesStyles.optionCell}>
+                <SelectableCard
+                  title={title}
+                  description={description}
+                  theme={theme}
+                  onPress={() => setLanguagePreference(item)}
+                  isSelected={isSelected}
+                  statusText={isSelected ? t.common.selected : undefined}
+                  compact
+                />
+              </View>
             );
           })}
         </View>
       </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[styles.label, { color: theme.colors.text }]}>{t.preferences.theme}</Text>
-        <View style={styles.grid}>
+      <View style={[preferencesStyles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[preferencesStyles.label, { color: theme.colors.text }]}>{t.preferences.theme}</Text>
+        <View style={preferencesStyles.grid}>
           {SUPPORTED_THEME_PREFERENCES.map((item) => {
-            const active = item === themePreference;
-            const label = item === 'system' ? t.preferences.themeSystem : item === 'dark' ? t.preferences.dark : t.preferences.light;
+            const isSelected = item === themePreference;
+            const title = item === 'system' ? t.preferences.themeSystem : item === 'dark' ? t.preferences.dark : t.preferences.light;
+
             return (
-              <Pressable
-                key={item}
-                onPress={() => setThemePreference(item)}
-                style={[
-                  styles.option,
-                  { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt },
-                  active && { borderColor: theme.colors.primary, backgroundColor: theme.colors.surfaceSoft },
-                ]}
-              >
-                <Text style={[styles.optionText, { color: theme.colors.text }]}>{label}</Text>
-              </Pressable>
+              <View key={item} style={preferencesStyles.optionCell}>
+                <SelectableCard
+                  title={title}
+                  theme={theme}
+                  onPress={() => setThemePreference(item)}
+                  isSelected={isSelected}
+                  statusText={isSelected ? t.common.selected : undefined}
+                  compact
+                />
+              </View>
             );
           })}
         </View>
       </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[styles.label, { color: theme.colors.text }]}>{t.preferences.region}</Text>
-        <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t.preferences.regionDescription}</Text>
-        <View style={styles.grid}>
-          <Pressable
-            onPress={() => setRegionPreference('system')}
-            style={[
-              styles.option,
-              { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt },
-              regionPreference === 'system' && { borderColor: theme.colors.primary, backgroundColor: theme.colors.surfaceSoft },
-            ]}
-          >
-            <Text style={[styles.optionText, { color: theme.colors.text }]}>{t.common.system} · {t.regions[regionCode]}</Text>
-          </Pressable>
+      <View style={[preferencesStyles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[preferencesStyles.label, { color: theme.colors.text }]}>{t.preferences.region}</Text>
+        <Text style={[preferencesStyles.description, { color: theme.colors.textMuted }]}>{t.preferences.regionDescription}</Text>
+        <View style={preferencesStyles.grid}>
+          <View style={preferencesStyles.optionCell}>
+            <SelectableCard
+              title={t.common.system}
+              description={`${t.common.current}: ${t.regions[regionCode]}`}
+              theme={theme}
+              onPress={() => setRegionPreference('system')}
+              isSelected={regionPreference === 'system'}
+              statusText={regionPreference === 'system' ? t.common.selected : undefined}
+              compact
+            />
+          </View>
+
           {SUPPORTED_REGIONS.map((item) => {
-            const active = item === regionPreference;
+            const isSelected = item === regionPreference;
             return (
-              <Pressable
-                key={item}
-                onPress={() => setRegionPreference(item)}
-                style={[
-                  styles.option,
-                  { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceAlt },
-                  active && { borderColor: theme.colors.primary, backgroundColor: theme.colors.surfaceSoft },
-                ]}
-              >
-                <Text style={[styles.optionText, { color: theme.colors.text }]}>{t.regions[item as RegionCode]}</Text>
-              </Pressable>
+              <View key={item} style={preferencesStyles.optionCell}>
+                <SelectableCard
+                  title={t.regions[item as RegionCode]}
+                  theme={theme}
+                  onPress={() => setRegionPreference(item)}
+                  isSelected={isSelected}
+                  statusText={isSelected ? t.common.selected : undefined}
+                  compact
+                />
+              </View>
             );
           })}
         </View>
       </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[styles.label, { color: theme.colors.text }]}>{t.preferences.pricingPreview}</Text>
-        <View style={styles.previewRow}>
-          <View style={[styles.previewTile, { backgroundColor: theme.colors.surfaceAlt }]}> 
-            <Text style={[styles.previewCaption, { color: theme.colors.textMuted }]}>{t.paywall.plans.monthly.title}</Text>
-            <Text style={[styles.previewValue, { color: theme.colors.text }]}>{monthlyPrice}</Text>
+      <View style={[preferencesStyles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[preferencesStyles.label, { color: theme.colors.text }]}>{t.preferences.pricingPreview}</Text>
+        <View style={preferencesStyles.previewRow}>
+          <View style={[preferencesStyles.previewTile, { backgroundColor: theme.colors.surfaceAlt }]}> 
+            <Text style={[preferencesStyles.previewCaption, { color: theme.colors.textMuted }]}>{t.paywall.plans.monthly.title}</Text>
+            <Text style={[preferencesStyles.previewValue, { color: theme.colors.text }]}>{monthlyPrice}</Text>
           </View>
-          <View style={[styles.previewTile, { backgroundColor: theme.colors.surfaceAlt }]}> 
-            <Text style={[styles.previewCaption, { color: theme.colors.textMuted }]}>{t.paywall.plans.yearly.title}</Text>
-            <Text style={[styles.previewValue, { color: theme.colors.text }]}>{yearlyPrice}</Text>
+          <View style={[preferencesStyles.previewTile, { backgroundColor: theme.colors.surfaceAlt }]}> 
+            <Text style={[preferencesStyles.previewCaption, { color: theme.colors.textMuted }]}>{t.paywall.plans.yearly.title}</Text>
+            <Text style={[preferencesStyles.previewValue, { color: theme.colors.text }]}>{yearlyPrice}</Text>
           </View>
         </View>
-        <Text style={[styles.metaText, { color: theme.colors.textSubtle }]}>{t.preferences.fxUpdated}: {fxSnapshotDate}</Text>
+        <Text style={[preferencesStyles.metaText, { color: theme.colors.textSubtle }]}>{t.preferences.fxUpdated}: {fxSnapshotDate}</Text>
       </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[styles.label, { color: theme.colors.text }]}>{t.preferences.subscriptionState}</Text>
+      <View style={[preferencesStyles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[preferencesStyles.label, { color: theme.colors.text }]}>{t.preferences.subscriptionState}</Text>
         <Button
           title={isSubscribed ? t.preferences.subscriptionOn : t.preferences.subscriptionOff}
           onPress={() => setIsSubscribed(!isSubscribed)}
@@ -140,83 +145,15 @@ export default function PreferencesScreen() {
         />
       </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
-        <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t.preferences.resetDescription}</Text>
+      <View style={[preferencesStyles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}> 
+        <Text style={[preferencesStyles.description, { color: theme.colors.textMuted }]}>{t.preferences.resetDescription}</Text>
         <Button title={t.common.restoreDefaults} onPress={() => void resetPreferences()} theme={theme} variant="secondary" />
       </View>
 
-      <View style={styles.footerActions}>
-        <Text style={[styles.savedText, { color: theme.colors.textSubtle }]}>{t.common.saved}</Text>
+      <View style={preferencesStyles.footerActions}>
+        <Text style={[preferencesStyles.savedText, { color: theme.colors.textSubtle }]}>{t.common.saved}</Text>
         <Button title={t.nav.backToMeditations} onPress={() => setScreen('meditations')} theme={theme} />
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 24,
-    padding: 18,
-    borderWidth: 1,
-    gap: 14,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  description: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  option: {
-    minHeight: 52,
-    minWidth: '48%',
-    flexGrow: 1,
-    borderWidth: 1,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  optionText: {
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  previewRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  previewTile: {
-    flex: 1,
-    borderRadius: 18,
-    padding: 14,
-  },
-  previewCaption: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  previewValue: {
-    fontSize: 19,
-    lineHeight: 24,
-    fontWeight: '900',
-    marginTop: 8,
-  },
-  metaText: {
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  footerActions: {
-    gap: 12,
-  },
-  savedText: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-});
