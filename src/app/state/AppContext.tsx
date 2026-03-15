@@ -6,7 +6,7 @@ import type { DeviceLocaleInfo, RegionCode, RegionPreference } from '../../featu
 import { type Dictionary, type Language, type LanguagePreference } from '../../shared/i18n';
 import { type AppTheme, type ThemeMode, type ThemePreference } from '../../shared/theme/themes';
 
-export type ScreenId = 'paywall' | 'meditations' | 'preferences';
+export type ScreenId = 'paywall' | 'meditations' | 'preferences' | 'player';
 
 export type AppContextValue = {
   screen: ScreenId;

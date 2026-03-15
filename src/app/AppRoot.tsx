@@ -4,10 +4,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './navigation/AppNavigator';
 import { AppProviders } from './providers/AppProviders';
 import { useAppContext } from './state/AppContext';
+import { usePlayer } from '../features/player/PlayerProvider';
+import { MiniPlayer } from '../features/player/ui/MiniPlayer';
 import { appRootStyles } from './styles/appRoot.styles';
 
 function RootContent() {
   const { theme, isHydrated, t } = useAppContext();
+  const player = usePlayer();
 
   if (!isHydrated) {
     return (
@@ -23,6 +26,13 @@ function RootContent() {
     <>
       <StatusBar barStyle={theme.statusBar} />
       <AppNavigator />
+      {player.hasTrack ? (
+        <MiniPlayer
+          theme={theme}
+          openLabel={t.player.open}
+          nowPlayingLabel={t.player.nowPlayingEyebrow}
+        />
+      ) : null}
     </>
   );
 }

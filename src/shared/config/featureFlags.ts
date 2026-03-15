@@ -12,6 +12,10 @@ export const FEATURE_FLAGS = {
     showPricingPreview: true,
     showDemoSubscriptionState: true,
   },
+  player: {
+    showMiniPlayer: true,
+    showQueuePreview: true,
+  },
 } as const;
 
 export type FeatureFlags = typeof FEATURE_FLAGS;
