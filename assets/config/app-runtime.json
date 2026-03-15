@@ -1,0 +1,10 @@
+{
+  "appName": "ZenPulse",
+  "storageKey": "zenpulse.app-state.v2",
+  "defaultScreen": "paywall",
+  "moodGenerationDelayMs": 550,
+  "player": {
+    "playbackTickMs": 1000,
+    "previousRestartThresholdSeconds": 4
+  }
+}

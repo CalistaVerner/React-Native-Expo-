@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useAppContext } from '../../app/state/AppContext';
+import { SCREEN_IDS } from '../../app/navigation/screenIds';
 import { buildPreferenceSections } from '../../features/settings/config/preferenceSections';
 import { FEATURE_FLAGS } from '../../shared/config/featureFlags';
 import { useModal } from '../../shared/ui/modal/ModalProvider';
@@ -92,6 +93,6 @@ export function usePreferencesScreenModel() {
         },
       });
     },
-    backToMeditations: () => setScreen('meditations'),
+    backToMeditations: () => setScreen(SCREEN_IDS.meditations),
   };
 }

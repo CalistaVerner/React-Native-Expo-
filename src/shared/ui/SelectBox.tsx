@@ -11,7 +11,7 @@ import {
 import { SHOULD_USE_NATIVE_DRIVER } from '../lib/animation';
 import { createLogger } from '../lib/logger';
 import type { AppTheme } from '../theme/themes';
-import { AppIconView, type AppIconSpec } from './AppIcon';
+import { AppIconView, type AppIconSpec, type AppIconTone } from './AppIcon';
 import { useSwipeToDismiss } from './overlay/useSwipeToDismiss';
 import { boxShadow } from './styles/effects';
 import { selectBoxStyles } from './styles/selectBox.styles';
@@ -40,7 +40,9 @@ type Props<T extends string> = {
 
 const logger = createLogger('ui:select-box');
 
-function resolveBadgeColors(theme: AppTheme, isSelected: boolean, tone = 'primary' as const) {
+type BadgeTone = Exclude<AppIconTone, 'default'>;
+
+function resolveBadgeColors(theme: AppTheme, isSelected: boolean, tone: BadgeTone = 'primary') {
   switch (tone) {
     case 'accent':
       return {
@@ -81,11 +83,8 @@ function SelectBoxIcon({
   isSelected: boolean;
   size: 'trigger' | 'option';
 }) {
-  const badgeColors = resolveBadgeColors(
-    theme,
-    isSelected,
-    icon.tone === 'default' ? 'primary' : icon.tone,
-  );
+  const badgeTone: BadgeTone = icon.tone === 'default' || icon.tone === undefined ? 'primary' : icon.tone;
+  const badgeColors = resolveBadgeColors(theme, isSelected, badgeTone);
 
   return (
     <>

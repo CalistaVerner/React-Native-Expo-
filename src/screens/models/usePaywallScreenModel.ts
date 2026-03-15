@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useAppContext } from '../../app/state/AppContext';
+import { SCREEN_IDS } from '../../app/navigation/screenIds';
 import { buildPaywallPlanCards } from '../../features/subscription/lib/planPresentation';
 import { FEATURE_FLAGS } from '../../shared/config/featureFlags';
 import { useToast } from '../../shared/ui/toast/ToastProvider';
@@ -42,7 +43,7 @@ export function usePaywallScreenModel() {
     setSelectedPlan,
     onTryFree: () => {
       setIsSubscribed(true);
-      setScreen('meditations');
+      setScreen(SCREEN_IDS.meditations);
       showToast({
         title: t.paywall.premiumToastTitle,
         message: t.paywall.premiumToastText,
@@ -51,7 +52,7 @@ export function usePaywallScreenModel() {
       });
     },
     onContinueFree: () => {
-      setScreen('meditations');
+      setScreen(SCREEN_IDS.meditations);
       showToast({
         title: t.paywall.freeToastTitle,
         message: t.paywall.freeToastText,

@@ -2,6 +2,7 @@ import type { RegionCode, RegionPreference } from '../model/types';
 import type { Dictionary, Language, LanguagePreference } from '../../../shared/i18n';
 import type { ThemePreference } from '../../../shared/theme/themes';
 import type { SelectBoxIconSpec, SelectBoxOption } from '../../../shared/ui/SelectBox';
+import { SUPPORTED_LANGUAGES, SUPPORTED_REGIONS } from '../config/settings.config';
 import { getPricingRegion } from '../../subscription/lib/pricing';
 
 const LANGUAGE_ICONS: Record<LanguagePreference, SelectBoxIconSpec> = {
@@ -39,7 +40,7 @@ export function buildLanguagePreferenceOptions(t: Dictionary, activeLanguage: La
       icon: LANGUAGE_ICONS.system,
       badgeText: 'Auto',
     },
-    ...(['en', 'ru', 'de'] as const).map((language) => ({
+    ...SUPPORTED_LANGUAGES.map((language) => ({
       value: language,
       title: t.languageNames[language],
       icon: LANGUAGE_ICONS[language],
@@ -72,7 +73,7 @@ export function buildRegionPreferenceOptions(
   t: Dictionary,
   activeRegion: RegionCode,
 ): SelectBoxOption<RegionPreference>[] {
-  const regionOptions = (['US', 'DE', 'GB', 'RU', 'JP', 'IN', 'BR', 'CA', 'AU', 'KZ'] as const).map((region) => ({
+  const regionOptions = SUPPORTED_REGIONS.map((region) => ({
     value: region,
     title: t.regions[region],
     icon: REGION_ICONS[region],

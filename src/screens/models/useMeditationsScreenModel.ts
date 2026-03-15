@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useAppContext } from '../../app/state/AppContext';
+import { SCREEN_IDS } from '../../app/navigation/screenIds';
 import { useAffirmationController } from '../../features/affirmation/lib/useAffirmationController';
 import { SESSIONS } from '../../features/meditations/config/sessions';
 import { useSessionSelection } from '../../features/meditations/lib/useSessionSelection';
@@ -44,7 +45,7 @@ export function useMeditationsScreenModel() {
         player.openTrack(mapSessionToPlayerTrack(session), playerQueue);
       },
     },
-    openSettings: () => setScreen('preferences'),
+    openSettings: () => setScreen(SCREEN_IDS.preferences),
     openPaywall: () => {
       showToast({
         title: t.meditations.lockedToastTitle,
@@ -52,7 +53,7 @@ export function useMeditationsScreenModel() {
         variant: 'warning',
         icon: { name: 'lock', tone: 'warning' },
       });
-      setScreen('paywall');
+      setScreen(SCREEN_IDS.paywall);
     },
   };
 }

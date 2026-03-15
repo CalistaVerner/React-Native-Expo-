@@ -1,0 +1,12 @@
+{
+  "defaults": {
+    "languagePreference": "system",
+    "themePreference": "system",
+    "regionPreference": "system"
+  },
+  "supportedLanguages": ["en", "ru", "de"],
+  "supportedLanguagePreferences": ["system", "en", "ru", "de"],
+  "supportedThemeModes": ["dark", "light"],
+  "supportedThemePreferences": ["system", "dark", "light"],
+  "supportedRegions": ["US", "DE", "GB", "RU", "JP", "IN", "BR", "CA", "AU", "KZ"]
+}

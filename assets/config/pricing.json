@@ -1,0 +1,39 @@
+{
+  "fxSnapshotDate": "2026-03-14",
+  "plans": [
+    {
+      "id": "monthly",
+      "priceUsd": 9.99,
+      "isDefault": false
+    },
+    {
+      "id": "yearly",
+      "priceUsd": 49.99,
+      "isDefault": true
+    }
+  ],
+  "fxRatesFromUsd": {
+    "USD": 1,
+    "EUR": 0.92,
+    "GBP": 0.78,
+    "RUB": 90,
+    "JPY": 149,
+    "INR": 83,
+    "BRL": 5.1,
+    "CAD": 1.36,
+    "AUD": 1.52,
+    "KZT": 499
+  },
+  "regions": {
+    "US": { "currency": "USD", "locale": "en-US" },
+    "DE": { "currency": "EUR", "locale": "de-DE" },
+    "GB": { "currency": "GBP", "locale": "en-GB" },
+    "RU": { "currency": "RUB", "locale": "ru-RU" },
+    "JP": { "currency": "JPY", "locale": "ja-JP" },
+    "IN": { "currency": "INR", "locale": "en-IN" },
+    "BR": { "currency": "BRL", "locale": "pt-BR" },
+    "CA": { "currency": "CAD", "locale": "en-CA" },
+    "AU": { "currency": "AUD", "locale": "en-AU" },
+    "KZ": { "currency": "KZT", "locale": "kk-KZ" }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "en": "Generate a short premium meditation affirmation in English for a user who feels {{mood}}. Tone: warm, calm, elegant. Length: 1-2 sentences.",
+  "ru": "Сгенерируй короткую премиальную аффирмацию для медитации на русском языке для пользователя, который чувствует состояние: {{mood}}. Тон: тёплый, спокойный, деликатный. Длина: 1–2 предложения.",
+  "de": "Erzeuge eine kurze Premium-Meditationsaffirmation auf Deutsch für eine Person mit der Stimmung {{mood}}. Ton: warm, ruhig, elegant. Länge: 1-2 Sätze."
+}

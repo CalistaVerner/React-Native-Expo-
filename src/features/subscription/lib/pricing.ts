@@ -1,5 +1,7 @@
 import { REGION_PRICING, FX_RATES_FROM_USD, type CurrencyCode, type PricingRegion } from '../config/pricing';
+import { DEFAULT_PLAN_ID, PLANS, getPlanById } from '../config/plans';
 import type { PlanId } from '../model/types';
+import { SUPPORTED_REGIONS } from '../../settings/config/settings.config';
 import type { RegionCode } from '../../settings/model/types';
 
 export type LocalizedPrice = {
@@ -8,6 +10,8 @@ export type LocalizedPrice = {
   regionalAmount: number;
   formattedPrice: string;
 };
+
+export type PricingSnapshot = Record<PlanId, LocalizedPrice>;
 
 function getCurrencyFractionDigits(currency: CurrencyCode) {
   if (currency === 'JPY') {
@@ -28,21 +32,9 @@ export function getPricingRegion(regionCode: RegionCode): PricingRegion {
 }
 
 export function resolveRegionCode(rawRegion: string | null | undefined): RegionCode {
-  switch ((rawRegion ?? '').toUpperCase()) {
-    case 'DE':
-    case 'GB':
-    case 'RU':
-    case 'JP':
-    case 'IN':
-    case 'BR':
-    case 'CA':
-    case 'AU':
-    case 'KZ':
-    case 'US':
-      return (rawRegion ?? 'US').toUpperCase() as RegionCode;
-    default:
-      return 'US';
-  }
+  const normalizedRegion = (rawRegion ?? '').toUpperCase();
+
+  return (SUPPORTED_REGIONS.find((region) => region === normalizedRegion) ?? 'US') as RegionCode;
 }
 
 export function convertUsdToRegionalPrice(usdAmount: number, currency: CurrencyCode) {
@@ -71,10 +63,20 @@ export function buildLocalizedPrice(planId: PlanId, usdAmount: number, regionCod
   };
 }
 
-export function computeYearlySavings(monthlyUsd: number, yearlyUsd: number, regionCode: RegionCode) {
+export function buildPricingSnapshot(regionCode: RegionCode): PricingSnapshot {
+  return Object.fromEntries(
+    PLANS.map((plan) => [plan.id, buildLocalizedPrice(plan.id, plan.priceUsd, regionCode)]),
+  ) as PricingSnapshot;
+}
+
+export function getDefaultPlanId(): PlanId {
+  return DEFAULT_PLAN_ID;
+}
+
+export function computeYearlySavings(regionCode: RegionCode) {
   const region = getPricingRegion(regionCode);
-  const monthlyTotal = convertUsdToRegionalPrice(monthlyUsd * 12, region.currency);
-  const yearlyTotal = convertUsdToRegionalPrice(yearlyUsd, region.currency);
+  const monthlyTotal = convertUsdToRegionalPrice(getPlanById('monthly').priceUsd * 12, region.currency);
+  const yearlyTotal = convertUsdToRegionalPrice(getPlanById('yearly').priceUsd, region.currency);
   const savings = Math.max(monthlyTotal - yearlyTotal, 0);
   return formatRegionalPrice(savings, region);
 }

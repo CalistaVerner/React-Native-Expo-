@@ -1,0 +1,5 @@
+[
+  { "id": "calm", "icon": { "name": "spa", "tone": "accent" } },
+  { "id": "neutral", "icon": { "name": "sun", "tone": "primary", "variant": "regular" } },
+  { "id": "stressed", "icon": { "name": "bolt", "tone": "warning" } }
+]

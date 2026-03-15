@@ -1,21 +1,5 @@
-export const FEATURE_FLAGS = {
-  paywall: {
-    showTopChips: true,
-    showRegionalMetrics: true,
-    showLegalNotes: true,
-  },
-  meditations: {
-    showPromptPreview: true,
-    showLibrarySelectionSummary: true,
-  },
-  preferences: {
-    showPricingPreview: true,
-    showDemoSubscriptionState: true,
-  },
-  player: {
-    showMiniPlayer: true,
-    showQueuePreview: true,
-  },
-} as const;
+import featureFlagsJson from '../../../assets/config/feature-flags.json';
+
+export const FEATURE_FLAGS = Object.freeze(featureFlagsJson);
 
 export type FeatureFlags = typeof FEATURE_FLAGS;

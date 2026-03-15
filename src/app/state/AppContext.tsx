@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import type { PlanId } from '../../features/subscription/model/types';
+import { APP_CONFIG } from '../../shared/config/app.config';
 import { useAppPreferences } from './useAppPreferences';
 import type { DeviceLocaleInfo, RegionCode, RegionPreference } from '../../features/settings/model/types';
 import { type Dictionary, type Language, type LanguagePreference } from '../../shared/i18n';
 import { type AppTheme, type ThemeMode, type ThemePreference } from '../../shared/theme/themes';
-
-export type ScreenId = 'paywall' | 'meditations' | 'preferences' | 'player';
+import type { ScreenId } from '../navigation/screenIds';
 
 export type AppContextValue = {
   screen: ScreenId;
@@ -49,7 +49,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppContextProvider({ children }: React.PropsWithChildren) {
   const systemScheme = useColorScheme();
-  const [screen, setScreen] = useState<ScreenId>('paywall');
+  const [screen, setScreen] = useState<ScreenId>(APP_CONFIG.defaultScreen);
   const preferences = useAppPreferences(systemScheme);
 
   const value = useMemo<AppContextValue>(

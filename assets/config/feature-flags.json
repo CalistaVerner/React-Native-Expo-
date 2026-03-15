@@ -1,0 +1,19 @@
+{
+  "paywall": {
+    "showTopChips": true,
+    "showRegionalMetrics": true,
+    "showLegalNotes": true
+  },
+  "meditations": {
+    "showPromptPreview": true,
+    "showLibrarySelectionSummary": true
+  },
+  "preferences": {
+    "showPricingPreview": true,
+    "showDemoSubscriptionState": true
+  },
+  "player": {
+    "showMiniPlayer": true,
+    "showQueuePreview": true
+  }
+}

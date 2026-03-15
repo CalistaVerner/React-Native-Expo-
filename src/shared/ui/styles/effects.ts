@@ -1,3 +1,5 @@
+import type { TextStyle } from 'react-native';
+
 export function boxShadow(
   offsetX: number,
   offsetY: number,
@@ -13,6 +15,13 @@ export function textShadow(
   offsetY: number,
   blurRadius: number,
   color: string,
-) {
-  return `${offsetX}px ${offsetY}px ${blurRadius}px ${color}`;
+): TextStyle {
+  return {
+    textShadowColor: color,
+    textShadowOffset: {
+      width: offsetX,
+      height: offsetY,
+    },
+    textShadowRadius: blurRadius,
+  };
 }

@@ -63,7 +63,7 @@ export const sessionCardStyles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 999,
     overflow: 'hidden',
-    textShadow: textShadow(0, 1, 2, 'rgba(0,0,0,0.4)'),
+    ...textShadow(0, 1, 2, 'rgba(0,0,0,0.4)'),
   },
   bottomBlock: {
     gap: 8,
@@ -75,13 +75,13 @@ export const sessionCardStyles = StyleSheet.create({
     lineHeight: 30,
     fontWeight: '900',
     maxWidth: '86%',
-    textShadow: textShadow(0, 2, 8, 'rgba(0,0,0,0.5)'),
+    ...textShadow(0, 2, 8, 'rgba(0,0,0,0.5)'),
   },
   hint: {
     color: IMAGE_TEXT_MUTED,
     fontSize: 13,
     lineHeight: 18,
     fontWeight: '700',
-    textShadow: textShadow(0, 1, 5, 'rgba(0,0,0,0.45)'),
+    ...textShadow(0, 1, 5, 'rgba(0,0,0,0.45)'),
   },
 });

@@ -6,7 +6,14 @@ import {
   DEFAULT_THEME_PREFERENCE,
 } from '../../features/settings/config/settings.config';
 import { FX_SNAPSHOT_DATE } from '../../features/subscription/config/pricing';
-import { buildLocalizedPrice, computeYearlySavings, getPricingRegion, resolveRegionCode } from '../../features/subscription/lib/pricing';
+import { isPlanId } from '../../features/subscription/config/plans';
+import {
+  buildPricingSnapshot,
+  computeYearlySavings,
+  getDefaultPlanId,
+  getPricingRegion,
+  resolveRegionCode,
+} from '../../features/subscription/lib/pricing';
 import type { PlanId } from '../../features/subscription/model/types';
 import { getDeviceLocaleInfo } from '../../features/settings/lib/deviceLocale';
 import type { DeviceLocaleInfo, RegionCode, RegionPreference } from '../../features/settings/model/types';
@@ -43,11 +50,15 @@ export type AppPreferencesController = {
   resetPreferences: () => Promise<void>;
 };
 
+function sanitizePlanId(planId: string | null | undefined): PlanId {
+  return isPlanId(planId) ? planId : getDefaultPlanId();
+}
+
 export function useAppPreferences(systemScheme: string | null | undefined): AppPreferencesController {
   const [isHydrated, setIsHydrated] = useState(false);
   const [deviceLocale, setDeviceLocale] = useState<DeviceLocaleInfo>(getDeviceLocaleInfo());
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<PlanId>('yearly');
+  const [selectedPlan, setSelectedPlan] = useState<PlanId>(getDefaultPlanId());
   const [languagePreference, setLanguagePreference] = useState<LanguagePreference>(DEFAULT_LANGUAGE_PREFERENCE);
   const [themePreference, setThemePreference] = useState<ThemePreference>(DEFAULT_THEME_PREFERENCE);
   const [regionPreference, setRegionPreference] = useState<RegionPreference>(DEFAULT_REGION_PREFERENCE);
@@ -74,7 +85,7 @@ export function useAppPreferences(systemScheme: string | null | undefined): AppP
         setLanguagePreference(persisted.languagePreference);
         setThemePreference(persisted.themePreference);
         setRegionPreference(persisted.regionPreference);
-        setSelectedPlan(persisted.selectedPlan);
+        setSelectedPlan(sanitizePlanId(persisted.selectedPlan));
         setIsSubscribed(persisted.isSubscribed);
       })
       .finally(() => {
@@ -123,17 +134,14 @@ export function useAppPreferences(systemScheme: string | null | undefined): AppP
   const themeMode = useMemo(() => resolveThemeMode(themePreference, systemScheme), [themePreference, systemScheme]);
   const theme = useMemo(() => getTheme(themeMode), [themeMode]);
   const t = useMemo(() => getDictionary(language), [language]);
-
-  const monthlyPrice = useMemo(() => buildLocalizedPrice('monthly', 9.99, regionCode).formattedPrice, [regionCode]);
-  const yearlyPrice = useMemo(() => buildLocalizedPrice('yearly', 49.99, regionCode).formattedPrice, [regionCode]);
-  const yearlySavings = useMemo(() => computeYearlySavings(9.99, 49.99, regionCode), [regionCode]);
+  const pricingSnapshot = useMemo(() => buildPricingSnapshot(regionCode), [regionCode]);
 
   const resetPreferences = useCallback(async () => {
     logger.warn('Resetting preferences to defaults');
     setLanguagePreference(DEFAULT_LANGUAGE_PREFERENCE);
     setThemePreference(DEFAULT_THEME_PREFERENCE);
     setRegionPreference(DEFAULT_REGION_PREFERENCE);
-    setSelectedPlan('yearly');
+    setSelectedPlan(getDefaultPlanId());
     await clearPersistedState();
     setIsHydrated(true);
   }, []);
@@ -155,9 +163,9 @@ export function useAppPreferences(systemScheme: string | null | undefined): AppP
     setRegionPreference,
     deviceLocale,
     detectedCurrencyCode: getPricingRegion(regionCode).currency,
-    monthlyPrice,
-    yearlyPrice,
-    yearlySavings,
+    monthlyPrice: pricingSnapshot.monthly.formattedPrice,
+    yearlyPrice: pricingSnapshot.yearly.formattedPrice,
+    yearlySavings: computeYearlySavings(regionCode),
     fxSnapshotDate: FX_SNAPSHOT_DATE,
     theme,
     t,

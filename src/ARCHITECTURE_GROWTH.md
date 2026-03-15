@@ -105,3 +105,31 @@ That gives the project:
 - support for solid / regular / brands variants
 - typed icon metadata in selects, panels, toast, and modals
 - less drift between feature modules
+
+## 11. Asset-driven runtime configuration
+
+Variable product data is no longer authored inline inside feature runtime code.
+
+The application now reads business/runtime data from:
+- `assets/config/app-runtime.json`
+- `assets/config/settings.json`
+- `assets/config/pricing.json`
+- `assets/config/feature-flags.json`
+- `assets/content/meditations/sessions.json`
+- `assets/content/affirmations/*`
+
+This removes business values from screens/hooks and makes content/config changes possible without rewriting feature logic.
+
+## 12. One source of truth for plans, FX and defaults
+
+Default plan selection, USD source prices, FX snapshot date, region-to-currency mapping and rates now come from a single pricing asset.
+
+That eliminates drift between:
+- subscription catalog
+- preferences preview
+- localized pricing runtime
+- reset/default logic
+
+## 13. Navigation/runtime constants are centralized
+
+Screen ids and player runtime timings now live in dedicated runtime modules/config instead of being duplicated as string literals or magic numbers across providers and screen models.

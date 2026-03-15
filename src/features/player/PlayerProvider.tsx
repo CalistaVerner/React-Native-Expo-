@@ -1,11 +1,13 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { SCREEN_IDS, type NonPlayerScreenId } from '../../app/navigation/screenIds';
 import { useAppContext } from '../../app/state/AppContext';
+import { APP_CONFIG } from '../../shared/config/app.config';
 import { createLogger } from '../../shared/lib/logger';
 import type { PlaybackState, PlayerTrack } from './model/types';
 
 const logger = createLogger('player:runtime');
-const PLAYBACK_TICK_MS = 1000;
-const PREVIOUS_RESTART_THRESHOLD_SECONDS = 4;
+const PLAYBACK_TICK_MS = APP_CONFIG.player.playbackTickMs;
+const PREVIOUS_RESTART_THRESHOLD_SECONDS = APP_CONFIG.player.previousRestartThresholdSeconds;
 
 type OpenTrackOptions = {
   openScreen?: boolean;
@@ -44,10 +46,10 @@ export function PlayerProvider({ children }: React.PropsWithChildren) {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [playbackState, setPlaybackState] = useState<PlaybackState>('idle');
   const [progressSeconds, setProgressSeconds] = useState(0);
-  const lastScreenRef = useRef<'paywall' | 'meditations' | 'preferences'>('meditations');
+  const lastScreenRef = useRef<NonPlayerScreenId>(SCREEN_IDS.meditations);
 
   useEffect(() => {
-    if (screen !== 'player') {
+    if (screen !== SCREEN_IDS.player) {
       lastScreenRef.current = screen;
     }
   }, [screen]);
@@ -58,7 +60,7 @@ export function PlayerProvider({ children }: React.PropsWithChildren) {
   const hasTrack = Boolean(currentTrack);
   const hasNext = currentIndex >= 0 && currentIndex < queue.length - 1;
   const hasPrevious = currentIndex > 0;
-  const isMiniPlayerVisible = hasTrack && screen !== 'player';
+  const isMiniPlayerVisible = hasTrack && screen !== SCREEN_IDS.player;
 
   const playIndex = useCallback((index: number) => {
     setCurrentIndex((current) => {
@@ -132,7 +134,7 @@ export function PlayerProvider({ children }: React.PropsWithChildren) {
     });
 
     if (options?.openScreen !== false) {
-      setScreen('player');
+      setScreen(SCREEN_IDS.player);
     }
   }, [setScreen]);
 
@@ -145,7 +147,7 @@ export function PlayerProvider({ children }: React.PropsWithChildren) {
       trackId: currentTrack.id,
       title: currentTrack.title,
     });
-    setScreen('player');
+    setScreen(SCREEN_IDS.player);
   }, [currentTrack, setScreen]);
 
   const minimizePlayer = useCallback(() => {
@@ -166,7 +168,7 @@ export function PlayerProvider({ children }: React.PropsWithChildren) {
     setCurrentIndex(-1);
     setProgressSeconds(0);
     setPlaybackState('idle');
-    setScreen('meditations');
+    setScreen(SCREEN_IDS.meditations);
   }, [currentTrack, setScreen]);
 
   const play = useCallback(() => {
