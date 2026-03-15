@@ -39,3 +39,16 @@ src/
     i18n/
     theme/
     ui/
+
+## Архитектурные улучшения
+
+В проект добавлены отдельные точки роста:
+
+- `screens/models/*` — screen-model hooks, чтобы экраны оставались декларативными
+- `features/settings/config/preferenceSections.ts` — data-driven секции настроек
+- `features/settings/ui/PreferenceSectionCard.tsx` — единый контейнер для select-полей
+- `features/subscription/lib/planPresentation.ts` — централизованная презентация тарифов
+- `features/subscription/ui/*` — переиспользуемые карточки preview/demo subscription
+- `features/affirmation/lib/useAffirmationController.ts` — отдельный контроллер AI-аффирмации
+- `features/meditations/lib/useSessionSelection.ts` — отдельный контроллер выбора сессии
+- `src/ARCHITECTURE_GROWTH.md` — краткая карта расширения проекта

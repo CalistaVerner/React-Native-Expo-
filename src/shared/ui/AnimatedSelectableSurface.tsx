@@ -8,7 +8,6 @@ import {
   type ViewStyle,
 } from 'react-native';
 import type { AppTheme } from '../theme/themes';
-import { AppIcon, type AppIconName } from './AppIcon';
 import { animatedSelectableSurfaceStyles } from './styles/animatedSelectableSurface.styles';
 
 type RenderState = {
@@ -29,7 +28,7 @@ type Props = {
   accessibilityRole?: AccessibilityRole;
   accessibilityState?: AccessibilityState;
   showSelectionIndicator?: boolean;
-  indicatorIcon?: AppIconName;
+  indicatorText?: string;
   selectedTintColor?: string;
   selectedTintOpacity?: number;
   pressedScale?: number;
@@ -48,7 +47,7 @@ export function AnimatedSelectableSurface({
   accessibilityRole = 'button',
   accessibilityState,
   showSelectionIndicator = false,
-  indicatorIcon = 'check',
+  indicatorText = '✓',
   selectedTintColor,
   selectedTintOpacity = 0.16,
   pressedScale = 0.987,
@@ -205,10 +204,11 @@ export function AnimatedSelectableSurface({
               },
             ]}
           >
-            <Animated.View
+            <Animated.Text
               style={[
-                animatedSelectableSurfaceStyles.indicatorIconWrap,
+                animatedSelectableSurfaceStyles.indicatorText,
                 {
+                  color: theme.colors.primaryText,
                   opacity: selectionProgress.interpolate({
                     inputRange: [0, 0.6, 1],
                     outputRange: [0, 0.4, 1],
@@ -216,8 +216,8 @@ export function AnimatedSelectableSurface({
                 },
               ]}
             >
-              <AppIcon name={indicatorIcon} size={12} color={theme.colors.primaryText} />
-            </Animated.View>
+              {indicatorText}
+            </Animated.Text>
           </Animated.View>
         ) : null}
 

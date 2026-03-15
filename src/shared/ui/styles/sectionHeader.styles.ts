@@ -34,12 +34,23 @@ export const sectionHeaderStyles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.4,
   },
+  titleCompact: {
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
   titleCentered: {
     textAlign: 'center',
   },
   caption: {
     fontSize: 14,
     lineHeight: 21,
+    maxWidth: 540,
+  },
+  captionCompact: {
+    fontSize: 13,
+    lineHeight: 19,
     maxWidth: 540,
   },
   captionCentered: {

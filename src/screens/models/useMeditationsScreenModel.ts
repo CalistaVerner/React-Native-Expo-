@@ -1,0 +1,59 @@
+import { useMemo } from 'react';
+import { useAppContext } from '../../app/state/AppContext';
+import { useAffirmationController } from '../../features/affirmation/lib/useAffirmationController';
+import { SESSIONS } from '../../features/meditations/config/sessions';
+import { useSessionSelection } from '../../features/meditations/lib/useSessionSelection';
+import { FEATURE_FLAGS } from '../../shared/config/featureFlags';
+import { useToast } from '../../shared/ui/toast/ToastProvider';
+
+export function useMeditationsScreenModel() {
+  const { theme, t, isSubscribed, setScreen, regionCode, language } = useAppContext();
+  const affirmation = useAffirmationController(language);
+  const selection = useSessionSelection(SESSIONS);
+  const { showToast } = useToast();
+
+  const librarySessions = useMemo(() => SESSIONS, []);
+
+  return {
+    theme,
+    t,
+    isSubscribed,
+    regionCode,
+    flags: FEATURE_FLAGS.meditations,
+    librarySessions,
+    affirmation: {
+      ...affirmation,
+      handleGenerate: async () => {
+        await affirmation.handleGenerate();
+        showToast({
+          title: t.meditations.affirmationToastTitle,
+          message: t.meditations.affirmationToastText,
+          variant: 'success',
+          icon: { name: 'star', tone: 'accent' },
+        });
+      },
+    },
+    selection: {
+      ...selection,
+      selectSession: (session: (typeof SESSIONS)[number]) => {
+        selection.selectSession(session);
+        showToast({
+          title: `${t.common.sessionOpenedPrefix} ${session.title}`,
+          message: t.common.sessionOpenedSuffix,
+          variant: 'info',
+          icon: { name: 'headphones', tone: 'primary' },
+        });
+      },
+    },
+    openSettings: () => setScreen('preferences'),
+    openPaywall: () => {
+      showToast({
+        title: t.meditations.lockedToastTitle,
+        message: t.meditations.lockedToastText,
+        variant: 'warning',
+        icon: { name: 'lock', tone: 'warning' },
+      });
+      setScreen('paywall');
+    },
+  };
+}

@@ -14,6 +14,8 @@ export const ru = {
     current: 'Текущее значение',
     selected: 'Выбрано',
     loading: 'Подготавливаем ваше спокойное пространство…',
+    cancel: 'Отмена',
+    confirm: 'Подтвердить',
   },
   languageNames: {
     en: 'English',
@@ -44,6 +46,10 @@ export const ru = {
     fxNote: 'Цены конвертируются из USD по настроенному FX-снимку.',
     detectedRegion: 'Текущий регион',
     currency: 'Валюта',
+    premiumToastTitle: 'Premium открыт',
+    premiumToastText: 'Полная библиотека медитаций теперь доступна в демо-режиме.',
+    freeToastTitle: 'Оставлен бесплатный режим',
+    freeToastText: 'Можно изучать базовые сессии и перейти на Premium позже.',
     benefits: [
       'Безлимитный доступ к премиальным сессиям',
       'Персональный AI-флоу аффирмаций',
@@ -88,6 +94,10 @@ export const ru = {
     lockedSession: 'Только Premium — переход на Paywall',
     welcome: 'Сделайте вдох. Пространство уже готово для вас.',
     settingsHint: 'Тема, язык и регион сохраняются автоматически.',
+    affirmationToastTitle: 'Аффирмация готова',
+    affirmationToastText: 'Новая направляющая фраза подготовлена под текущее состояние.',
+    lockedToastTitle: 'Premium-сессия заблокирована',
+    lockedToastText: 'Откройте Premium, чтобы получить доступ ко всей библиотеке и премиальным практикам.',
   },
   preferences: {
     title: 'Настройки',
@@ -105,6 +115,12 @@ export const ru = {
     subscriptionOn: 'Premium открыт',
     subscriptionOff: 'Бесплатный режим',
     resetDescription: 'Сбросить язык, тему и регион обратно на системные значения.',
+    resetConfirmTitle: 'Вернуть системные значения?',
+    resetConfirmText: 'Язык, тема и регион снова будут управляться системными настройками устройства.',
+    resetToastTitle: 'Настройки восстановлены',
+    resetToastText: 'Язык, тема и регион снова следуют системным параметрам.',
+    subscriptionToastTitle: 'Статус подписки обновлён',
+    subscriptionToastText: 'Демо-флаг доступа успешно изменён.',
   },
   moods: {
     calm: 'Спокойно',

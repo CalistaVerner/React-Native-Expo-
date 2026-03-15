@@ -14,6 +14,8 @@ export const en = {
     current: 'Current',
     selected: 'Selected',
     loading: 'Preparing your calm space…',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
   },
   languageNames: {
     en: 'English',
@@ -44,6 +46,10 @@ export const en = {
     fxNote: 'Prices are converted from USD using the configured FX snapshot.',
     detectedRegion: 'Detected region',
     currency: 'Currency',
+    premiumToastTitle: 'Premium unlocked',
+    premiumToastText: 'The full meditation library is now available in demo mode.',
+    freeToastTitle: 'Free mode continued',
+    freeToastText: 'You can explore the core sessions and upgrade later.',
     benefits: [
       'Unlimited premium meditation sessions',
       'Personalized AI affirmation flow',
@@ -88,6 +94,10 @@ export const en = {
     lockedSession: 'Premium only — opens paywall',
     welcome: 'Take a breath. Your space is ready.',
     settingsHint: 'Theme, language, and region are saved automatically.',
+    affirmationToastTitle: 'Affirmation ready',
+    affirmationToastText: 'A new guided line has been prepared for your current mood.',
+    lockedToastTitle: 'Premium session locked',
+    lockedToastText: 'Upgrade to open the full library and premium guided tracks.',
   },
   preferences: {
     title: 'Preferences',
@@ -105,6 +115,12 @@ export const en = {
     subscriptionOn: 'Premium unlocked',
     subscriptionOff: 'Free mode',
     resetDescription: 'Reset language, theme, and region back to system defaults.',
+    resetConfirmTitle: 'Restore system defaults?',
+    resetConfirmText: 'This will reset language, theme, and region preferences to system-controlled values.',
+    resetToastTitle: 'Preferences restored',
+    resetToastText: 'Language, theme, and region now follow the system again.',
+    subscriptionToastTitle: 'Subscription state updated',
+    subscriptionToastText: 'The demo entitlement flag was changed successfully.',
   },
   moods: {
     calm: 'Calm',

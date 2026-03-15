@@ -25,7 +25,7 @@ export function Button({
 }: Props) {
   const isPrimary = variant === 'primary';
   const isSoft = variant === 'soft';
-  const contentColor = isPrimary ? theme.colors.primaryText : theme.colors.text;
+  const textColor = isPrimary ? theme.colors.primaryText : theme.colors.text;
 
   return (
     <Pressable
@@ -45,11 +45,9 @@ export function Button({
       ]}
     >
       <View style={buttonStyles.inline}>
-        {leftIcon ? <AppIcon name={leftIcon} size={15} color={contentColor} /> : null}
-        {!leftIcon && leftAdornment ? (
-          <Text style={[buttonStyles.adornment, { color: contentColor }]}>{leftAdornment}</Text>
-        ) : null}
-        <Text style={[buttonStyles.text, { color: contentColor }]}>{title}</Text>
+        {leftIcon ? <AppIcon name={leftIcon} size={15} color={textColor} /> : null}
+        {leftAdornment ? <Text style={[buttonStyles.adornment, { color: textColor }]}>{leftAdornment}</Text> : null}
+        <Text style={[buttonStyles.text, { color: textColor }]}>{title}</Text>
       </View>
     </Pressable>
   );

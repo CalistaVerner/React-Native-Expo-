@@ -18,6 +18,7 @@ type Props = {
   isGenerating: boolean;
   affirmationText: string;
   lastPrompt: string;
+  showPromptPreview?: boolean;
 };
 
 export function AffirmationSection({
@@ -29,6 +30,7 @@ export function AffirmationSection({
   isGenerating,
   affirmationText,
   lastPrompt,
+  showPromptPreview = true,
 }: Props) {
   return (
     <SurfaceCard theme={theme} style={affirmationSectionStyles.card}>
@@ -61,19 +63,19 @@ export function AffirmationSection({
       />
 
       <View style={affirmationSectionStyles.panelStack}>
-        <View style={[affirmationSectionStyles.resultPanel, { backgroundColor: theme.colors.surfaceSoft }]}>
+        <View style={[affirmationSectionStyles.resultPanel, { backgroundColor: theme.colors.surfaceSoft }]}> 
           <Text style={[affirmationSectionStyles.resultEyebrow, { color: theme.colors.primary }]}>{t.meditations.aiResultEyebrow}</Text>
-          <Text style={[affirmationSectionStyles.resultText, { color: theme.colors.text }]}>
+          <Text style={[affirmationSectionStyles.resultText, { color: theme.colors.text }]}> 
             {affirmationText || t.meditations.aiPlaceholder}
           </Text>
         </View>
 
-        {!!lastPrompt && (
-          <View style={[affirmationSectionStyles.promptPanel, { backgroundColor: theme.colors.surfaceAlt, borderColor: theme.colors.border }]}>
+        {showPromptPreview && !!lastPrompt ? (
+          <View style={[affirmationSectionStyles.promptPanel, { backgroundColor: theme.colors.surfaceAlt, borderColor: theme.colors.border }]}> 
             <Text style={[affirmationSectionStyles.promptEyebrow, { color: theme.colors.textSubtle }]}>{t.common.mockPrompt}</Text>
             <Text style={[affirmationSectionStyles.promptText, { color: theme.colors.textMuted }]}>{lastPrompt}</Text>
           </View>
-        )}
+        ) : null}
       </View>
     </SurfaceCard>
   );

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Animated, Image, Text, View } from 'react-native';
 import type { AppTheme } from '../../../shared/theme/themes';
-import { AppIcon } from '../../../shared/ui/AppIcon';
 import { AnimatedSelectableSurface } from '../../../shared/ui/AnimatedSelectableSurface';
 import type { Session } from '../config/sessions';
 import {
@@ -9,7 +8,6 @@ import {
   BASE_OVERLAY,
   BOTTOM_SCRIM,
   IMAGE_TEXT,
-  IMAGE_TEXT_MUTED,
   sessionCardStyles,
 } from './styles/sessionCard.styles';
 
@@ -34,8 +32,7 @@ export function SessionCard({
   openLabel,
   selectedLabel,
 }: Props) {
-  const hintText = locked ? lockedLabel : isSelected ? `${selectedLabel} · ${openLabel}` : openLabel;
-  const hintIcon = locked ? 'lock' : isSelected ? 'check' : 'play';
+  const effectiveHint = locked ? `🔒 ${lockedLabel}` : isSelected ? `${selectedLabel} · ${openLabel}` : openLabel;
 
   return (
     <AnimatedSelectableSurface
@@ -116,10 +113,7 @@ export function SessionCard({
               >
                 {item.title}
               </Animated.Text>
-              <View style={sessionCardStyles.hintRow}>
-                <AppIcon name={hintIcon} size={12} color={IMAGE_TEXT_MUTED} />
-                <Text style={sessionCardStyles.hint}>{hintText}</Text>
-              </View>
+              <Text style={sessionCardStyles.hint}>{effectiveHint}</Text>
             </View>
           </View>
         </>

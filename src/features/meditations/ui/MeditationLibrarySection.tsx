@@ -17,6 +17,7 @@ type Props = {
   isSubscribed: boolean;
   onSessionPress: (session: Session) => void;
   onLockedSessionPress: () => void;
+  showSelectionSummary?: boolean;
 };
 
 export function MeditationLibrarySection({
@@ -27,6 +28,7 @@ export function MeditationLibrarySection({
   isSubscribed,
   onSessionPress,
   onLockedSessionPress,
+  showSelectionSummary = true,
 }: Props) {
   const selectedSession = sessions.find((session) => session.id === selectedSessionId) ?? null;
 
@@ -39,19 +41,21 @@ export function MeditationLibrarySection({
         caption={t.meditations.featuredCaption}
       />
 
-      <SurfaceCard theme={theme} variant="soft" style={meditationLibraryStyles.summaryCard}>
-        <Text style={[meditationLibraryStyles.summaryEyebrow, { color: theme.colors.primary }]}>
-          {selectedSession ? t.meditations.selectionReadyEyebrow : t.meditations.selectionIdleEyebrow}
-        </Text>
-        <Text style={[meditationLibraryStyles.summaryTitle, { color: theme.colors.text }]}>
-          {selectedSession ? selectedSession.title : t.meditations.selectionIdleTitle}
-        </Text>
-        <Text style={[meditationLibraryStyles.summaryText, { color: theme.colors.textMuted }]}>
-          {selectedSession
-            ? `${selectedSession.duration} · ${selectedSession.category} · ${t.common.sessionOpenedSuffix}`
-            : t.meditations.selectionIdleText}
-        </Text>
-      </SurfaceCard>
+      {showSelectionSummary ? (
+        <SurfaceCard theme={theme} variant="soft" style={meditationLibraryStyles.summaryCard}>
+          <Text style={[meditationLibraryStyles.summaryEyebrow, { color: theme.colors.primary }]}> 
+            {selectedSession ? t.meditations.selectionReadyEyebrow : t.meditations.selectionIdleEyebrow}
+          </Text>
+          <Text style={[meditationLibraryStyles.summaryTitle, { color: theme.colors.text }]}> 
+            {selectedSession ? selectedSession.title : t.meditations.selectionIdleTitle}
+          </Text>
+          <Text style={[meditationLibraryStyles.summaryText, { color: theme.colors.textMuted }]}> 
+            {selectedSession
+              ? `${selectedSession.duration} · ${selectedSession.category} · ${t.common.sessionOpenedSuffix}`
+              : t.meditations.selectionIdleText}
+          </Text>
+        </SurfaceCard>
+      ) : null}
 
       <View style={meditationLibraryStyles.list}>
         {sessions.map((item, index) => {

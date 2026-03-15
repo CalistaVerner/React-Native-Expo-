@@ -8,17 +8,10 @@ import {
   View,
 } from 'react-native';
 import type { AppTheme } from '../theme/themes';
-import { AppIcon, type AppIconName } from './AppIcon';
+import { AppIconView, type AppIconSpec } from './AppIcon';
 import { selectBoxStyles } from './styles/selectBox.styles';
 
-type IconTone = 'primary' | 'accent' | 'success' | 'muted';
-
-export type SelectBoxIconSpec = {
-  family?: 'fa6';
-  name: AppIconName;
-  tone?: IconTone;
-  badgeLabel?: string;
-};
+export type SelectBoxIconSpec = AppIconSpec;
 
 export type SelectBoxOption<T extends string> = {
   value: T;
@@ -53,36 +46,34 @@ const CLOSE_TIMING = {
   useNativeDriver: true,
 } as const;
 
-function resolveToneColors(theme: AppTheme, tone: IconTone = 'primary', isSelected = false) {
-  if (tone === 'accent') {
-    return {
-      icon: theme.colors.accent,
-      badgeBg: isSelected ? theme.colors.accent : theme.colors.surfaceSoft,
-      badgeText: isSelected ? theme.colors.primaryText : theme.colors.text,
-    };
+function resolveBadgeColors(theme: AppTheme, isSelected: boolean, tone = 'primary' as const) {
+  switch (tone) {
+    case 'accent':
+      return {
+        backgroundColor: isSelected ? theme.colors.accent : theme.colors.surfaceSoft,
+        textColor: isSelected ? theme.colors.primaryText : theme.colors.text,
+      };
+    case 'success':
+      return {
+        backgroundColor: isSelected ? theme.colors.success : theme.colors.surfaceSoft,
+        textColor: isSelected ? theme.colors.successText : theme.colors.text,
+      };
+    case 'muted':
+      return {
+        backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceSoft,
+        textColor: isSelected ? theme.colors.primaryText : theme.colors.textMuted,
+      };
+    case 'warning':
+      return {
+        backgroundColor: isSelected ? theme.colors.warning : theme.colors.surfaceSoft,
+        textColor: theme.colors.text,
+      };
+    default:
+      return {
+        backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceSoft,
+        textColor: isSelected ? theme.colors.primaryText : theme.colors.text,
+      };
   }
-
-  if (tone === 'success') {
-    return {
-      icon: theme.colors.success,
-      badgeBg: isSelected ? theme.colors.success : theme.colors.surfaceSoft,
-      badgeText: isSelected ? theme.colors.successText : theme.colors.text,
-    };
-  }
-
-  if (tone === 'muted') {
-    return {
-      icon: theme.colors.textMuted,
-      badgeBg: isSelected ? theme.colors.primary : theme.colors.surfaceSoft,
-      badgeText: isSelected ? theme.colors.primaryText : theme.colors.textMuted,
-    };
-  }
-
-  return {
-    icon: theme.colors.primary,
-    badgeBg: isSelected ? theme.colors.primary : theme.colors.surfaceSoft,
-    badgeText: isSelected ? theme.colors.primaryText : theme.colors.text,
-  };
 }
 
 function SelectBoxIcon({
@@ -96,26 +87,22 @@ function SelectBoxIcon({
   isSelected: boolean;
   size: 'trigger' | 'option';
 }) {
-  const tone = resolveToneColors(theme, icon.tone, isSelected);
+  const badgeColors = resolveBadgeColors(theme, isSelected, icon.tone === 'default' ? 'primary' : icon.tone);
 
   return (
     <>
-      <AppIcon
-        name={icon.name}
-        size={size === 'trigger' ? 20 : 18}
-        color={tone.icon}
-      />
+      <AppIconView icon={icon} theme={theme} size={size === 'trigger' ? 20 : 18} />
       {icon.badgeLabel ? (
         <View
           style={[
             size === 'trigger' ? selectBoxStyles.iconBadge : selectBoxStyles.optionIconBadge,
             {
-              backgroundColor: tone.badgeBg,
+              backgroundColor: badgeColors.backgroundColor,
               borderColor: theme.colors.surface,
             },
           ]}
         >
-          <Text style={[selectBoxStyles.iconBadgeText, { color: tone.badgeText }]}>
+          <Text style={[selectBoxStyles.iconBadgeText, { color: badgeColors.textColor }]}>
             {icon.badgeLabel}
           </Text>
         </View>
@@ -267,7 +254,7 @@ export function SelectBox<T extends string>({
               },
             ]}
           >
-            <AppIcon name="chevron-down" size={14} color={theme.colors.textMuted} />
+            <AppIconView icon={{ name: 'chevron-down', tone: 'muted' }} theme={theme} size={14} />
           </Animated.View>
         </View>
       </Pressable>
@@ -313,7 +300,7 @@ export function SelectBox<T extends string>({
                 ]}
                 accessibilityRole="button"
               >
-                <AppIcon name="xmark" size={15} color={theme.colors.text} />
+                <AppIconView icon={{ name: 'xmark', tone: 'default' }} theme={theme} size={15} />
               </Pressable>
             </View>
 
@@ -395,7 +382,7 @@ export function SelectBox<T extends string>({
                         ]}
                       >
                         {isSelected ? (
-                          <AppIcon name="check" size={11} color={theme.colors.primaryText} />
+                          <AppIconView icon={{ name: 'check', tone: 'default' }} theme={theme} size={11} color={theme.colors.primaryText} />
                         ) : null}
                       </View>
                     </View>

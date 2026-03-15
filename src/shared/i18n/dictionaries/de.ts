@@ -14,6 +14,8 @@ export const de = {
     current: 'Aktuell',
     selected: 'Ausgewählt',
     loading: 'Dein ruhiger Raum wird vorbereitet…',
+    cancel: 'Abbrechen',
+    confirm: 'Bestätigen',
   },
   languageNames: {
     en: 'English',
@@ -44,6 +46,10 @@ export const de = {
     fxNote: 'Preise werden aus USD mit dem konfigurierten FX-Snapshot umgerechnet.',
     detectedRegion: 'Erkannte Region',
     currency: 'Währung',
+    premiumToastTitle: 'Premium freigeschaltet',
+    premiumToastText: 'Die komplette Meditationsbibliothek ist jetzt im Demo-Modus verfügbar.',
+    freeToastTitle: 'Freier Modus fortgesetzt',
+    freeToastText: 'Du kannst die Kern-Sessions erkunden und später upgraden.',
     benefits: [
       'Unbegrenzter Zugriff auf Premium-Meditationen',
       'Personalisierter KI-Affirmationsfluss',
@@ -88,6 +94,10 @@ export const de = {
     lockedSession: 'Nur Premium — öffnet die Paywall',
     welcome: 'Atme einmal tief durch. Dein Raum ist bereit.',
     settingsHint: 'Thema, Sprache und Region werden automatisch gespeichert.',
+    affirmationToastTitle: 'Affirmation bereit',
+    affirmationToastText: 'Eine neue geführte Zeile wurde für deine aktuelle Stimmung vorbereitet.',
+    lockedToastTitle: 'Premium-Session gesperrt',
+    lockedToastText: 'Upgrade, um die gesamte Bibliothek und Premium-Tracks zu öffnen.',
   },
   preferences: {
     title: 'Einstellungen',
@@ -105,6 +115,12 @@ export const de = {
     subscriptionOn: 'Premium freigeschaltet',
     subscriptionOff: 'Freier Modus',
     resetDescription: 'Sprache, Thema und Region auf Systemwerte zurücksetzen.',
+    resetConfirmTitle: 'Systemwerte wiederherstellen?',
+    resetConfirmText: 'Sprache, Thema und Region werden wieder durch das Gerät gesteuert.',
+    resetToastTitle: 'Einstellungen wiederhergestellt',
+    resetToastText: 'Sprache, Thema und Region folgen wieder den Systemwerten.',
+    subscriptionToastTitle: 'Abo-Status aktualisiert',
+    subscriptionToastText: 'Das Demo-Entitlement wurde erfolgreich geändert.',
   },
   moods: {
     calm: 'Ruhig',

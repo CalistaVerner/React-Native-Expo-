@@ -10,9 +10,10 @@ type Props = {
   eyebrow?: string;
   align?: 'left' | 'center';
   accessory?: React.ReactNode;
+  compact?: boolean;
 };
 
-export function SectionHeader({ theme, title, caption, eyebrow, align = 'left', accessory }: Props) {
+export function SectionHeader({ theme, title, caption, eyebrow, align = 'left', accessory, compact = false }: Props) {
   const centered = align === 'center';
 
   return (
@@ -23,11 +24,23 @@ export function SectionHeader({ theme, title, caption, eyebrow, align = 'left', 
             {eyebrow}
           </Text>
         ) : null}
-        <Text style={[sectionHeaderStyles.title, { color: theme.colors.text }, centered && sectionHeaderStyles.titleCentered]}>
+        <Text
+          style={[
+            compact ? sectionHeaderStyles.titleCompact : sectionHeaderStyles.title,
+            { color: theme.colors.text },
+            centered && sectionHeaderStyles.titleCentered,
+          ]}
+        >
           {title}
         </Text>
         {caption ? (
-          <Text style={[sectionHeaderStyles.caption, { color: theme.colors.textMuted }, centered && sectionHeaderStyles.captionCentered]}>
+          <Text
+            style={[
+              compact ? sectionHeaderStyles.captionCompact : sectionHeaderStyles.caption,
+              { color: theme.colors.textMuted },
+              centered && sectionHeaderStyles.captionCentered,
+            ]}
+          >
             {caption}
           </Text>
         ) : null}

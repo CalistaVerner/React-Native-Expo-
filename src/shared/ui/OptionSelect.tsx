@@ -2,15 +2,15 @@ import React from 'react';
 import { Animated, Text, View } from 'react-native';
 import type { DimensionValue } from 'react-native';
 import type { AppTheme } from '../theme/themes';
-import { AppIcon, type AppIconName } from './AppIcon';
 import { AnimatedSelectableSurface } from './AnimatedSelectableSurface';
+import { AppIconView, type AppIconSpec } from './AppIcon';
 import { optionSelectStyles } from './styles/optionSelect.styles';
 
 export type OptionSelectOption<T extends string> = {
   value: T;
   title: string;
   description?: string;
-  icon?: AppIconName | React.ReactNode;
+  icon?: React.ReactNode | AppIconSpec;
   badgeText?: string;
   metaText?: string;
   disabled?: boolean;
@@ -27,6 +27,10 @@ type Props<T extends string> = {
   layout?: OptionSelectLayout;
   columns?: number;
 };
+
+function isAppIconSpec(icon: OptionSelectOption<string>['icon']): icon is AppIconSpec {
+  return Boolean(icon && typeof icon === 'object' && 'name' in icon);
+}
 
 export function OptionSelect<T extends string>({
   options,
@@ -102,12 +106,10 @@ export function OptionSelect<T extends string>({
                           },
                         ]}
                       >
-                        {typeof option.icon === 'string' ? (
-                          <AppIcon
-                            name={option.icon}
-                            size={18}
-                            color={isSelected ? theme.colors.primary : theme.colors.textMuted}
-                          />
+                        {isAppIconSpec(option.icon) ? (
+                          <AppIconView icon={option.icon} theme={theme} size={22} />
+                        ) : typeof option.icon === 'string' ? (
+                          <Text style={optionSelectStyles.iconText}>{option.icon}</Text>
                         ) : (
                           option.icon
                         )}
@@ -117,7 +119,7 @@ export function OptionSelect<T extends string>({
                     <View style={[optionSelectStyles.textWrap, isGrid && optionSelectStyles.textWrapGrid]}>
                       <View style={[optionSelectStyles.titleRow, isGrid && optionSelectStyles.titleRowGrid]}>
                         <Text
-                          numberOfLines={isGrid ? 2 : 1}
+                          numberOfLines={isGrid ? 2 : 2}
                           style={[
                             optionSelectStyles.title,
                             isGrid && optionSelectStyles.titleGrid,
@@ -126,7 +128,6 @@ export function OptionSelect<T extends string>({
                         >
                           {option.title}
                         </Text>
-
                         {option.badgeText ? (
                           <Text
                             style={[
@@ -174,7 +175,14 @@ export function OptionSelect<T extends string>({
                         },
                       ]}
                     >
-                      {isSelected ? <AppIcon name="check" size={11} color={theme.colors.primaryText} /> : null}
+                      {isSelected ? (
+                        <AppIconView
+                          icon={{ name: 'check', tone: 'default' }}
+                          theme={theme}
+                          size={12}
+                          color={theme.colors.primaryText}
+                        />
+                      ) : null}
                     </Animated.View>
                   </View>
 
