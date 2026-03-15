@@ -64,9 +64,9 @@ export function SessionCard({
           />
 
           <Animated.View
-            pointerEvents="none"
             style={[
               sessionCardStyles.selectedSheen,
+              { pointerEvents: 'none' as const },
               {
                 opacity: selectionProgress.interpolate({
                   inputRange: [0, 1],

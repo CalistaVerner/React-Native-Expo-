@@ -5,39 +5,49 @@ import {
   type GestureResponderEvent,
   type PanResponderGestureState,
 } from 'react-native';
+import { SHOULD_USE_NATIVE_DRIVER } from '../../lib/animation';
+
+type SwipeAxis = 'horizontal' | 'vertical';
+type SwipeDirection = 'positive' | 'both';
 
 type UseSwipeToDismissParams = {
   enabled?: boolean;
+  axis?: SwipeAxis;
+  direction?: SwipeDirection;
   dismissThreshold?: number;
   velocityThreshold?: number;
   onDismiss: () => void;
+  onGestureStart?: () => void;
+  onGestureCancel?: () => void;
 };
-
-const SPRING_BACK = {
-  toValue: 0,
-  useNativeDriver: true,
-  speed: 26,
-  bounciness: 5,
-} as const;
 
 export function useSwipeToDismiss({
   enabled = true,
+  axis = 'vertical',
+  direction = 'positive',
   dismissThreshold = 92,
   velocityThreshold = 1.1,
   onDismiss,
+  onGestureStart,
+  onGestureCancel,
 }: UseSwipeToDismissParams) {
-  const translateY = useRef(new Animated.Value(0)).current;
+  const translate = useRef(new Animated.Value(0)).current;
   const dismissRequestedRef = useRef(false);
 
   const reset = useCallback(() => {
     dismissRequestedRef.current = false;
-    translateY.stopAnimation();
-    translateY.setValue(0);
-  }, [translateY]);
+    translate.stopAnimation();
+    translate.setValue(0);
+  }, [translate]);
 
   const springBack = useCallback(() => {
-    Animated.spring(translateY, SPRING_BACK).start();
-  }, [translateY]);
+    Animated.spring(translate, {
+      toValue: 0,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
+      speed: 26,
+      bounciness: 5,
+    }).start();
+  }, [translate]);
 
   const requestDismiss = useCallback(() => {
     if (dismissRequestedRef.current) {
@@ -56,43 +66,83 @@ export function useSwipeToDismiss({
             return false;
           }
 
-          const isVerticalIntent = Math.abs(gestureState.dy) > Math.abs(gestureState.dx);
-          return isVerticalIntent && gestureState.dy > 8;
+          const primaryDistance = axis === 'horizontal' ? gestureState.dx : gestureState.dy;
+          const crossDistance = axis === 'horizontal' ? gestureState.dy : gestureState.dx;
+          const hasPrimaryIntent = Math.abs(primaryDistance) > Math.abs(crossDistance);
+
+          if (!hasPrimaryIntent) {
+            return false;
+          }
+
+          if (direction === 'both') {
+            return Math.abs(primaryDistance) > 8;
+          }
+
+          return primaryDistance > 8;
         },
         onPanResponderGrant: () => {
-          translateY.stopAnimation();
+          translate.stopAnimation();
+          onGestureStart?.();
         },
         onPanResponderMove: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-          translateY.setValue(Math.max(0, gestureState.dy));
+          const nextValue = axis === 'horizontal' ? gestureState.dx : gestureState.dy;
+          translate.setValue(direction === 'both' ? nextValue : Math.max(0, nextValue));
         },
         onPanResponderRelease: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+          const distance = axis === 'horizontal' ? gestureState.dx : gestureState.dy;
+          const velocity = axis === 'horizontal' ? gestureState.vx : gestureState.vy;
+          const measuredDistance = direction === 'both' ? Math.abs(distance) : distance;
+          const measuredVelocity = direction === 'both' ? Math.abs(velocity) : velocity;
           const shouldDismiss =
-            gestureState.dy >= dismissThreshold || gestureState.vy >= velocityThreshold;
+            measuredDistance >= dismissThreshold || measuredVelocity >= velocityThreshold;
 
           if (shouldDismiss) {
             requestDismiss();
             return;
           }
 
+          onGestureCancel?.();
           springBack();
         },
-        onPanResponderTerminate: springBack,
+        onPanResponderTerminate: () => {
+          onGestureCancel?.();
+          springBack();
+        },
         onPanResponderTerminationRequest: () => false,
       }),
-    [dismissThreshold, enabled, requestDismiss, springBack, translateY, velocityThreshold],
+    [
+      axis,
+      direction,
+      dismissThreshold,
+      enabled,
+      onGestureCancel,
+      onGestureStart,
+      requestDismiss,
+      springBack,
+      translate,
+      velocityThreshold,
+    ],
   );
 
   const dismissProgress = useMemo(
     () =>
-      translateY.interpolate({
-        inputRange: [0, dismissThreshold],
-        outputRange: [0, 1],
+      translate.interpolate({
+        inputRange:
+          direction === 'both'
+            ? [-dismissThreshold, 0, dismissThreshold]
+            : [0, dismissThreshold],
+        outputRange: direction === 'both' ? [1, 0, 1] : [0, 1],
         extrapolate: 'clamp',
       }),
-    [dismissThreshold, translateY],
+    [direction, dismissThreshold, translate],
   );
 
+  const translateX = axis === 'horizontal' ? translate : new Animated.Value(0);
+  const translateY = axis === 'vertical' ? translate : new Animated.Value(0);
+
   return {
+    translate,
+    translateX,
     translateY,
     dismissProgress,
     panHandlers: panResponder.panHandlers,

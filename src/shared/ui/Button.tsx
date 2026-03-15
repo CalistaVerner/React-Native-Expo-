@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import type { AppTheme } from '../theme/themes';
 import { AppIcon, type AppIconName } from './AppIcon';
 import { buttonStyles } from './styles/button.styles';
+import { boxShadow } from './styles/effects';
 
 type Props = {
   title: string;
@@ -36,7 +37,7 @@ export function Button({
       style={({ pressed }) => [
         buttonStyles.button,
         isPrimary
-          ? { backgroundColor: theme.colors.primary, shadowColor: theme.colors.shadow }
+          ? { backgroundColor: theme.colors.primary, boxShadow: boxShadow(0, 8, 18, theme.colors.shadow) }
           : isSoft
             ? { backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border }
             : { borderWidth: 1, borderColor: theme.colors.border, backgroundColor: 'transparent' },

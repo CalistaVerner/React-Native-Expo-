@@ -13,25 +13,11 @@ export const toastStyles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 22,
     borderWidth: 1,
-    shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.16,
-    shadowRadius: 24,
     elevation: 6,
   },
   accent: {
     height: 4,
     width: '100%',
-  },
-  dragHandleWrap: {
-    alignItems: 'center',
-    paddingTop: 8,
-    marginBottom: -2,
-  },
-  dragHandle: {
-    width: 36,
-    height: 4,
-    borderRadius: 999,
-    opacity: 0.8,
   },
   content: {
     flexDirection: 'row',

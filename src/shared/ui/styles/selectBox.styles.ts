@@ -7,9 +7,6 @@ export const selectBoxStyles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 20,
     elevation: 6,
   },
   triggerPressed: {
@@ -123,9 +120,6 @@ export const selectBoxStyles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingBottom: 18,
     maxHeight: '76%',
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.18,
-    shadowRadius: 26,
     elevation: 12,
   },
   sheetHandleWrap: {
@@ -218,14 +212,14 @@ export const selectBoxStyles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '800',
-    flexShrink: 1,
   },
   optionBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 999,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: 10,
+    lineHeight: 12,
+    fontWeight: '900',
     overflow: 'hidden',
   },
   optionDescription: {
@@ -235,8 +229,7 @@ export const selectBoxStyles = StyleSheet.create({
   },
   optionTrailing: {
     alignItems: 'flex-end',
-    justifyContent: 'center',
-    gap: 10,
+    gap: 8,
     flexShrink: 0,
   },
   optionMeta: {
@@ -248,8 +241,8 @@ export const selectBoxStyles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 999,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
   },
 });

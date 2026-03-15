@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { boxShadow } from './effects';
 
 export const selectableCardStyles = StyleSheet.create({
   pressableBase: {
@@ -9,9 +10,7 @@ export const selectableCardStyles = StyleSheet.create({
     paddingVertical: 14,
   },
   pressableSelected: {
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.18,
-    shadowRadius: 22,
+    boxShadow: boxShadow(0, 12, 22, 'rgba(18, 24, 36, 0.18)'),
     elevation: 3,
   },
   pressableCompact: {

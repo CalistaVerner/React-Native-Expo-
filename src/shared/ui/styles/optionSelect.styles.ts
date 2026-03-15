@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { boxShadow } from './effects';
 
 export const optionSelectStyles = StyleSheet.create({
   container: {
@@ -32,9 +33,7 @@ export const optionSelectStyles = StyleSheet.create({
     paddingVertical: 14,
   },
   surfaceSelected: {
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.16,
-    shadowRadius: 18,
+    boxShadow: boxShadow(0, 10, 18, 'rgba(18, 24, 36, 0.16)'),
     elevation: 4,
   },
   surfaceDisabled: {

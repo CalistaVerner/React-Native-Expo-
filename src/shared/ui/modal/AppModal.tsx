@@ -1,16 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Animated,
-  Modal,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
-import type { AppTheme } from '../../theme/themes';
+import { Animated, Modal, Pressable, Text, View } from 'react-native';
+import { SHOULD_USE_NATIVE_DRIVER } from '../../lib/animation';
 import { createLogger } from '../../lib/logger';
-import { Button } from '../Button';
+import type { AppTheme } from '../../theme/themes';
 import { AppIconView, type AppIconSpec } from '../AppIcon';
+import { Button } from '../Button';
 import { useSwipeToDismiss } from '../overlay/useSwipeToDismiss';
+import { boxShadow } from '../styles/effects';
 import { appModalStyles } from './styles/appModal.styles';
 
 export type AppModalAction = {
@@ -32,19 +28,6 @@ type Props = {
   actions?: AppModalAction[];
 };
 
-const OPEN_SPRING = {
-  toValue: 1,
-  useNativeDriver: true,
-  speed: 18,
-  bounciness: 6,
-} as const;
-
-const CLOSE_TIMING = {
-  toValue: 0,
-  duration: 180,
-  useNativeDriver: true,
-} as const;
-
 const logger = createLogger('ui:modal');
 
 export function AppModal({
@@ -61,6 +44,8 @@ export function AppModal({
   const progress = useRef(new Animated.Value(visible ? 1 : 0)).current;
   const { panHandlers, reset, translateY } = useSwipeToDismiss({
     enabled: dismissible && visible,
+    axis: 'vertical',
+    direction: 'positive',
     dismissThreshold: 96,
     velocityThreshold: 1,
     onDismiss: () => {
@@ -74,11 +59,20 @@ export function AppModal({
       setIsMounted(true);
       progress.setValue(0);
       reset();
-      Animated.spring(progress, OPEN_SPRING).start();
+      Animated.spring(progress, {
+        toValue: 1,
+        useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
+        speed: 18,
+        bounciness: 6,
+      }).start();
       return;
     }
 
-    Animated.timing(progress, CLOSE_TIMING).start(({ finished }: { finished: boolean }) => {
+    Animated.timing(progress, {
+      toValue: 0,
+      duration: 180,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
+    }).start(({ finished }: { finished: boolean }) => {
       if (finished) {
         reset();
         setIsMounted(false);
@@ -89,10 +83,7 @@ export function AppModal({
   const overlayOpacity = useMemo(
     () =>
       Animated.multiply(
-        progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        }),
+        progress,
         translateY.interpolate({
           inputRange: [0, 160],
           outputRange: [1, 0.72],
@@ -154,7 +145,7 @@ export function AppModal({
             {
               backgroundColor: theme.colors.surface,
               borderColor: theme.colors.border,
-              shadowColor: theme.colors.shadow,
+              boxShadow: boxShadow(0, 18, 28, theme.colors.shadow),
               transform: [{ translateY: panelTranslateY }, { scale: panelScale }, { scale: dragScale }],
             },
           ]}

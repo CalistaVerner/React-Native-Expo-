@@ -9,15 +9,9 @@ export const infoPanelStyles = StyleSheet.create({
     gap: 10,
   },
   emphasis: {
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.07,
-    shadowRadius: 22,
     elevation: 2,
   },
   subtle: {
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.04,
-    shadowRadius: 14,
     elevation: 1,
   },
   header: {

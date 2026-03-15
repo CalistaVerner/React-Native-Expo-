@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { boxShadow, textShadow } from '../../../../shared/ui/styles/effects';
 
 export const IMAGE_TEXT = '#F8FBFF';
 export const IMAGE_TEXT_MUTED = 'rgba(248,251,255,0.92)';
@@ -16,8 +17,7 @@ export const sessionCardStyles = StyleSheet.create({
     opacity: 0.96,
   },
   selected: {
-    shadowOpacity: 0.22,
-    shadowRadius: 28,
+    boxShadow: boxShadow(0, 16, 28, 'rgba(9, 14, 28, 0.22)'),
     elevation: 8,
   },
   image: {
@@ -63,9 +63,7 @@ export const sessionCardStyles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 999,
     overflow: 'hidden',
-    textShadowColor: 'rgba(0,0,0,0.4)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadow: textShadow(0, 1, 2, 'rgba(0,0,0,0.4)'),
   },
   bottomBlock: {
     gap: 8,
@@ -77,17 +75,13 @@ export const sessionCardStyles = StyleSheet.create({
     lineHeight: 30,
     fontWeight: '900',
     maxWidth: '86%',
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
+    textShadow: textShadow(0, 2, 8, 'rgba(0,0,0,0.5)'),
   },
   hint: {
     color: IMAGE_TEXT_MUTED,
     fontSize: 13,
     lineHeight: 18,
     fontWeight: '700',
-    textShadowColor: 'rgba(0,0,0,0.45)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 5,
+    textShadow: textShadow(0, 1, 5, 'rgba(0,0,0,0.45)'),
   },
 });

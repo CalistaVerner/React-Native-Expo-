@@ -7,8 +7,10 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { SHOULD_USE_NATIVE_DRIVER } from '../lib/animation';
 import type { AppTheme } from '../theme/themes';
 import { animatedSelectableSurfaceStyles } from './styles/animatedSelectableSurface.styles';
+import { boxShadow } from './styles/effects';
 
 type RenderState = {
   selectionProgress: Animated.Value;
@@ -62,7 +64,7 @@ export function AnimatedSelectableSurface({
       toValue: isSelected ? 1 : 0,
       friction: 8,
       tension: 110,
-      useNativeDriver: true,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
     });
 
     animation.start();
@@ -77,7 +79,7 @@ export function AnimatedSelectableSurface({
       toValue: 1,
       friction: 10,
       tension: 220,
-      useNativeDriver: true,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
     }).start();
   };
 
@@ -86,13 +88,13 @@ export function AnimatedSelectableSurface({
       toValue: 0,
       friction: 10,
       tension: 220,
-      useNativeDriver: true,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
     }).start();
   };
 
   const renderState = useMemo(
     () => ({ selectionProgress, pressProgress }),
-    [pressProgress, selectionProgress]
+    [pressProgress, selectionProgress],
   );
 
   const content = typeof children === 'function' ? children(renderState) : children;
@@ -110,10 +112,7 @@ export function AnimatedSelectableSurface({
         style={[
           style,
           {
-            shadowColor: isSelected ? theme.colors.primary : theme.colors.shadow,
-            shadowOpacity: isSelected ? 0.18 : 0.1,
-            shadowRadius: isSelected ? 24 : 16,
-            shadowOffset: { width: 0, height: isSelected ? 14 : 8 },
+            boxShadow: boxShadow(0, isSelected ? 14 : 8, isSelected ? 24 : 16, theme.colors.shadow),
             elevation: isSelected ? 6 : 2,
             transform: [
               {
@@ -125,7 +124,7 @@ export function AnimatedSelectableSurface({
                   pressProgress.interpolate({
                     inputRange: [0, 1],
                     outputRange: [0, 1.2],
-                  })
+                  }),
                 ),
               },
               {
@@ -140,9 +139,9 @@ export function AnimatedSelectableSurface({
         ]}
       >
         <Animated.View
-          pointerEvents="none"
           style={[
             animatedSelectableSurfaceStyles.tintLayer,
+            { pointerEvents: 'none' as const },
             {
               borderRadius,
               backgroundColor: selectedTintColor ?? theme.colors.primary,
@@ -163,9 +162,9 @@ export function AnimatedSelectableSurface({
         />
 
         <Animated.View
-          pointerEvents="none"
           style={[
             animatedSelectableSurfaceStyles.ring,
+            { pointerEvents: 'none' as const },
             {
               borderRadius,
               borderColor: theme.colors.primary,
@@ -187,9 +186,9 @@ export function AnimatedSelectableSurface({
 
         {showSelectionIndicator ? (
           <Animated.View
-            pointerEvents="none"
             style={[
               animatedSelectableSurfaceStyles.indicator,
+              { pointerEvents: 'none' as const },
               {
                 backgroundColor: theme.colors.primary,
                 opacity: selectionProgress,

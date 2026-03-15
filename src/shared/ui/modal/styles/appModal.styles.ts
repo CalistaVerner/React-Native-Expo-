@@ -19,9 +19,6 @@ export const appModalStyles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 18,
     gap: 18,
-    shadowOffset: { width: 0, height: 18 },
-    shadowOpacity: 0.18,
-    shadowRadius: 28,
     elevation: 8,
   },
   dragHandleWrap: {

@@ -3,6 +3,7 @@ import { View, Text, type StyleProp, type ViewStyle } from 'react-native';
 import type { AppTheme } from '../theme/themes';
 import { AppIconView, type AppIconSpec } from './AppIcon';
 import { infoPanelStyles } from './styles/infoPanel.styles';
+import { boxShadow } from './styles/effects';
 
 type Props = React.PropsWithChildren<{
   theme: AppTheme;
@@ -23,7 +24,7 @@ export function InfoPanel({ theme, title, icon, variant = 'emphasis', style, chi
         {
           backgroundColor: isSubtle ? theme.colors.surfaceAlt : theme.colors.surfaceSoft,
           borderColor: theme.colors.border,
-          shadowColor: theme.colors.shadow,
+          boxShadow: boxShadow(0, isSubtle ? 6 : 10, isSubtle ? 14 : 22, theme.colors.shadow),
         },
         style,
       ]}

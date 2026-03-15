@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
+import { SHOULD_USE_NATIVE_DRIVER } from '../lib/animation';
 import type { AppTheme } from '../theme/themes';
 import { animatedBackdropStyles } from './styles/animatedBackdrop.styles';
 
@@ -13,8 +14,8 @@ function useLoopingProgress(duration: number) {
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(value, { toValue: 1, duration, useNativeDriver: true }),
-        Animated.timing(value, { toValue: 0, duration, useNativeDriver: true }),
+        Animated.timing(value, { toValue: 1, duration, useNativeDriver: SHOULD_USE_NATIVE_DRIVER }),
+        Animated.timing(value, { toValue: 0, duration, useNativeDriver: SHOULD_USE_NATIVE_DRIVER }),
       ])
     );
 
@@ -33,7 +34,7 @@ export function AnimatedBackdrop({ theme }: Props) {
   const fastFloat = useLoopingProgress(4200);
 
   return (
-    <View pointerEvents="none" style={animatedBackdropStyles.container}>
+    <View style={[animatedBackdropStyles.container, { pointerEvents: 'none' as const }]}>
       <Animated.View
         style={[
           animatedBackdropStyles.orb,

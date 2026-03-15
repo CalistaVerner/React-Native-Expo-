@@ -14,9 +14,11 @@ import {
   type PressableStateCallbackType,
 } from 'react-native';
 import { useAppContext } from '../../../app/state/AppContext';
+import { SHOULD_USE_NATIVE_DRIVER } from '../../lib/animation';
 import { createLogger } from '../../lib/logger';
 import { AppIconView, type AppIconSpec, resolveIconColor } from '../AppIcon';
 import { useSwipeToDismiss } from '../overlay/useSwipeToDismiss';
+import { boxShadow } from '../styles/effects';
 import { toastStyles } from './styles/toast.styles';
 
 const logger = createLogger('ui:toast');
@@ -75,18 +77,32 @@ function ToastCard({
   toast,
   progress,
   onDismiss,
+  onPauseTimer,
+  onResumeTimer,
 }: {
   toast: ToastRecord;
   progress: Animated.Value;
   onDismiss: (id: number) => void;
+  onPauseTimer: (id: number) => void;
+  onResumeTimer: (id: number) => void;
 }) {
   const { theme } = useAppContext();
   const icon = resolveToastIcon(toast);
   const variant = toast.variant ?? 'info';
   const accentColor = resolveAccentColor(theme, variant);
   const swipe = useSwipeToDismiss({
-    dismissThreshold: 72,
-    velocityThreshold: 0.9,
+    axis: 'horizontal',
+    direction: 'both',
+    dismissThreshold: 88,
+    velocityThreshold: 0.85,
+    onGestureStart: () => {
+      logger.info('Paused toast dispose timer', { id: toast.id, title: toast.title });
+      onPauseTimer(toast.id);
+    },
+    onGestureCancel: () => {
+      logger.info('Resumed toast dispose timer', { id: toast.id, title: toast.title });
+      onResumeTimer(toast.id);
+    },
     onDismiss: () => {
       logger.info('Dismissed toast by swipe', { id: toast.id, title: toast.title });
       onDismiss(toast.id);
@@ -97,25 +113,25 @@ function ToastCard({
     () =>
       Animated.multiply(
         progress,
-        swipe.translateY.interpolate({
-          inputRange: [0, 120],
-          outputRange: [1, 0.72],
+        swipe.translateX.interpolate({
+          inputRange: [-180, 0, 180],
+          outputRange: [0.18, 1, 0.18],
           extrapolate: 'clamp',
         }),
       ),
-    [progress, swipe.translateY],
+    [progress, swipe.translateX],
   );
 
-  const translateY = useMemo(
+  const translateX = useMemo(
     () =>
       Animated.add(
         progress.interpolate({
           inputRange: [0, 1],
-          outputRange: [-16, 0],
+          outputRange: [10, 0],
         }),
-        swipe.translateY,
+        swipe.translateX,
       ),
-    [progress, swipe.translateY],
+    [progress, swipe.translateX],
   );
 
   const scale = useMemo(
@@ -135,16 +151,13 @@ function ToastCard({
         {
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
-          shadowColor: theme.colors.shadow,
+          boxShadow: boxShadow(0, 14, 24, theme.colors.shadow),
           opacity,
-          transform: [{ translateY }, { scale }],
+          transform: [{ translateX }, { scale }],
         },
       ]}
     >
       <View style={[toastStyles.accent, { backgroundColor: accentColor }]} />
-      <View style={toastStyles.dragHandleWrap}>
-        <View style={[toastStyles.dragHandle, { backgroundColor: theme.colors.border }]} />
-      </View>
       <View style={toastStyles.content}>
         <View
           style={[
@@ -189,6 +202,17 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
   const nextIdRef = useRef(1);
   const timersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
   const progressMapRef = useRef<Record<number, Animated.Value>>({});
+  const remainingMsRef = useRef<Record<number, number>>({});
+  const startedAtRef = useRef<Record<number, number>>({});
+
+  const clearTimer = useCallback((id: number) => {
+    const timer = timersRef.current[id];
+    if (timer) {
+      clearTimeout(timer);
+      delete timersRef.current[id];
+    }
+    delete startedAtRef.current[id];
+  }, []);
 
   const dismissToast = useCallback((id?: number) => {
     setToasts((current) => {
@@ -197,21 +221,19 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
         return current;
       }
 
-      const progress = progressMapRef.current[targetId];
-      const timer = timersRef.current[targetId];
-      if (timer) {
-        clearTimeout(timer);
-        delete timersRef.current[targetId];
-      }
+      clearTimer(targetId);
+      delete remainingMsRef.current[targetId];
 
+      const progress = progressMapRef.current[targetId];
       if (!progress) {
+        delete progressMapRef.current[targetId];
         return current.filter((toast) => toast.id !== targetId);
       }
 
       Animated.timing(progress, {
         toValue: 0,
         duration: 170,
-        useNativeDriver: true,
+        useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
       }).start(({ finished }: { finished: boolean }) => {
         if (finished) {
           delete progressMapRef.current[targetId];
@@ -221,7 +243,49 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
 
       return current;
     });
+  }, [clearTimer]);
+
+  const startTimer = useCallback((id: number, durationMs: number) => {
+    clearTimer(id);
+    remainingMsRef.current[id] = durationMs;
+    startedAtRef.current[id] = Date.now();
+    timersRef.current[id] = setTimeout(() => {
+      dismissToast(id);
+    }, durationMs);
+  }, [clearTimer, dismissToast]);
+
+  const pauseToastTimer = useCallback((id: number) => {
+    const timer = timersRef.current[id];
+    if (!timer) {
+      return;
+    }
+
+    clearTimeout(timer);
+    delete timersRef.current[id];
+
+    const startedAt = startedAtRef.current[id] ?? Date.now();
+    const elapsed = Date.now() - startedAt;
+    const currentRemaining = remainingMsRef.current[id] ?? 0;
+    remainingMsRef.current[id] = Math.max(0, currentRemaining - elapsed);
+    delete startedAtRef.current[id];
   }, []);
+
+  const resumeToastTimer = useCallback((id: number) => {
+    if (timersRef.current[id]) {
+      return;
+    }
+
+    const remainingMs = remainingMsRef.current[id] ?? 0;
+    if (remainingMs <= 0) {
+      dismissToast(id);
+      return;
+    }
+
+    startedAtRef.current[id] = Date.now();
+    timersRef.current[id] = setTimeout(() => {
+      dismissToast(id);
+    }, remainingMs);
+  }, [dismissToast]);
 
   const showToast = useCallback(
     (payload: ToastPayload) => {
@@ -237,20 +301,29 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
 
       const progress = new Animated.Value(0);
       progressMapRef.current[id] = progress;
+      remainingMsRef.current[id] = toast.durationMs ?? 2600;
 
-      setToasts((current) => [toast, ...current].slice(0, 3));
+      setToasts((current) => {
+        const next = [toast, ...current].slice(0, 3);
+        const removed = current.filter((existing) => !next.some((item) => item.id === existing.id));
+        for (const stale of removed) {
+          clearTimer(stale.id);
+          delete progressMapRef.current[stale.id];
+          delete remainingMsRef.current[stale.id];
+        }
+        return next;
+      });
+
       Animated.spring(progress, {
         toValue: 1,
-        useNativeDriver: true,
+        useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
         speed: 20,
         bounciness: 6,
       }).start();
 
-      timersRef.current[id] = setTimeout(() => {
-        dismissToast(id);
-      }, toast.durationMs);
+      startTimer(id, toast.durationMs ?? 2600);
     },
-    [dismissToast],
+    [clearTimer, startTimer],
   );
 
   const value = useMemo<ToastContextValue>(
@@ -261,13 +334,15 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <View pointerEvents="box-none" style={toastStyles.viewport}>
+      <View style={[toastStyles.viewport, { pointerEvents: 'box-none' as const }]}>
         {toasts.map((toast) => (
           <ToastCard
             key={toast.id}
             toast={toast}
             progress={progressMapRef.current[toast.id] ?? new Animated.Value(1)}
             onDismiss={dismissToast}
+            onPauseTimer={pauseToastTimer}
+            onResumeTimer={resumeToastTimer}
           />
         ))}
       </View>

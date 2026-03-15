@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, type StyleProp, type ViewStyle } from 'react-native';
+import { SHOULD_USE_NATIVE_DRIVER } from '../lib/animation';
 
 type Props = React.PropsWithChildren<{
   delay?: number;
@@ -22,7 +23,7 @@ export function AnimatedEntrance({
       toValue: 1,
       duration,
       delay,
-      useNativeDriver: true,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
     });
 
     animation.start();

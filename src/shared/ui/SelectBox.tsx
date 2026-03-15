@@ -8,10 +8,12 @@ import {
   View,
   type PressableStateCallbackType,
 } from 'react-native';
-import type { AppTheme } from '../theme/themes';
+import { SHOULD_USE_NATIVE_DRIVER } from '../lib/animation';
 import { createLogger } from '../lib/logger';
+import type { AppTheme } from '../theme/themes';
 import { AppIconView, type AppIconSpec } from './AppIcon';
 import { useSwipeToDismiss } from './overlay/useSwipeToDismiss';
+import { boxShadow } from './styles/effects';
 import { selectBoxStyles } from './styles/selectBox.styles';
 
 export type SelectBoxIconSpec = AppIconSpec;
@@ -35,19 +37,6 @@ type Props<T extends string> = {
   placeholder?: string;
   modalTitle?: string;
 };
-
-const OPEN_SPRING = {
-  toValue: 1,
-  useNativeDriver: true,
-  speed: 18,
-  bounciness: 7,
-} as const;
-
-const CLOSE_TIMING = {
-  toValue: 0,
-  duration: 180,
-  useNativeDriver: true,
-} as const;
 
 const logger = createLogger('ui:select-box');
 
@@ -134,6 +123,8 @@ export function SelectBox<T extends string>({
   const progress = useRef(new Animated.Value(0)).current;
   const { panHandlers, reset, translateY } = useSwipeToDismiss({
     enabled: isMounted,
+    axis: 'vertical',
+    direction: 'positive',
     dismissThreshold: 94,
     velocityThreshold: 1,
     onDismiss: () => {
@@ -155,11 +146,20 @@ export function SelectBox<T extends string>({
     setIsMounted(true);
     progress.setValue(0);
     reset();
-    Animated.spring(progress, OPEN_SPRING).start();
+    Animated.spring(progress, {
+      toValue: 1,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
+      speed: 18,
+      bounciness: 7,
+    }).start();
   }, [isOpen, progress, reset]);
 
   function close() {
-    Animated.timing(progress, CLOSE_TIMING).start(({ finished }: { finished: boolean }) => {
+    Animated.timing(progress, {
+      toValue: 0,
+      duration: 180,
+      useNativeDriver: SHOULD_USE_NATIVE_DRIVER,
+    }).start(({ finished }: { finished: boolean }) => {
       if (finished) {
         reset();
         setIsMounted(false);
@@ -185,10 +185,7 @@ export function SelectBox<T extends string>({
   const overlayOpacity = useMemo(
     () =>
       Animated.multiply(
-        progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        }),
+        progress,
         translateY.interpolate({
           inputRange: [0, 180],
           outputRange: [1, 0.66],
@@ -244,7 +241,7 @@ export function SelectBox<T extends string>({
           {
             backgroundColor: theme.colors.surfaceAlt,
             borderColor: theme.colors.border,
-            shadowColor: theme.colors.shadow,
+            boxShadow: boxShadow(0, 10, 20, theme.colors.shadow),
           },
           pressed && selectBoxStyles.triggerPressed,
         ]}
@@ -326,7 +323,7 @@ export function SelectBox<T extends string>({
               {
                 backgroundColor: theme.colors.surface,
                 borderColor: theme.colors.border,
-                shadowColor: theme.colors.shadow,
+                boxShadow: boxShadow(0, -10, 26, theme.colors.shadow),
                 transform: [{ translateY: panelTranslateY }, { scale: panelScale }, { scale: dragScale }],
               },
             ]}
