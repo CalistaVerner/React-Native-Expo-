@@ -1,8 +1,22 @@
-import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Animated,
+  Pressable,
+  Text,
+  View,
+  type PressableStateCallbackType,
+} from 'react-native';
 import { useAppContext } from '../../../app/state/AppContext';
 import { createLogger } from '../../lib/logger';
 import { AppIconView, type AppIconSpec, resolveIconColor } from '../AppIcon';
+import { useSwipeToDismiss } from '../overlay/useSwipeToDismiss';
 import { toastStyles } from './styles/toast.styles';
 
 const logger = createLogger('ui:toast');
@@ -43,7 +57,10 @@ function resolveToastIcon(payload: ToastRecord): AppIconSpec {
   }
 }
 
-function resolveAccentColor(theme: ReturnType<typeof useAppContext>['theme'], variant: ToastVariant) {
+function resolveAccentColor(
+  theme: ReturnType<typeof useAppContext>['theme'],
+  variant: ToastVariant,
+) {
   switch (variant) {
     case 'success':
       return theme.colors.success;
@@ -54,8 +71,120 @@ function resolveAccentColor(theme: ReturnType<typeof useAppContext>['theme'], va
   }
 }
 
-export function ToastProvider({ children }: React.PropsWithChildren) {
+function ToastCard({
+  toast,
+  progress,
+  onDismiss,
+}: {
+  toast: ToastRecord;
+  progress: Animated.Value;
+  onDismiss: (id: number) => void;
+}) {
   const { theme } = useAppContext();
+  const icon = resolveToastIcon(toast);
+  const variant = toast.variant ?? 'info';
+  const accentColor = resolveAccentColor(theme, variant);
+  const swipe = useSwipeToDismiss({
+    dismissThreshold: 72,
+    velocityThreshold: 0.9,
+    onDismiss: () => {
+      logger.info('Dismissed toast by swipe', { id: toast.id, title: toast.title });
+      onDismiss(toast.id);
+    },
+  });
+
+  const opacity = useMemo(
+    () =>
+      Animated.multiply(
+        progress,
+        swipe.translateY.interpolate({
+          inputRange: [0, 120],
+          outputRange: [1, 0.72],
+          extrapolate: 'clamp',
+        }),
+      ),
+    [progress, swipe.translateY],
+  );
+
+  const translateY = useMemo(
+    () =>
+      Animated.add(
+        progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-16, 0],
+        }),
+        swipe.translateY,
+      ),
+    [progress, swipe.translateY],
+  );
+
+  const scale = useMemo(
+    () =>
+      progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.96, 1],
+      }),
+    [progress],
+  );
+
+  return (
+    <Animated.View
+      {...swipe.panHandlers}
+      style={[
+        toastStyles.card,
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border,
+          shadowColor: theme.colors.shadow,
+          opacity,
+          transform: [{ translateY }, { scale }],
+        },
+      ]}
+    >
+      <View style={[toastStyles.accent, { backgroundColor: accentColor }]} />
+      <View style={toastStyles.dragHandleWrap}>
+        <View style={[toastStyles.dragHandle, { backgroundColor: theme.colors.border }]} />
+      </View>
+      <View style={toastStyles.content}>
+        <View
+          style={[
+            toastStyles.iconWrap,
+            {
+              backgroundColor: theme.colors.surfaceSoft,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
+          <AppIconView
+            icon={icon}
+            theme={theme}
+            size={18}
+            color={resolveIconColor(theme, icon.tone)}
+          />
+        </View>
+        <View style={toastStyles.textWrap}>
+          <Text style={[toastStyles.title, { color: theme.colors.text }]}>{toast.title}</Text>
+          {toast.message ? (
+            <Text style={[toastStyles.message, { color: theme.colors.textMuted }]}>
+              {toast.message}
+            </Text>
+          ) : null}
+        </View>
+        <Pressable
+          onPress={() => onDismiss(toast.id)}
+          style={({ pressed }: PressableStateCallbackType) => [
+            toastStyles.closeButton,
+            pressed && toastStyles.closeButtonPressed,
+          ]}
+        >
+          <AppIconView icon={{ name: 'xmark', tone: 'muted' }} theme={theme} size={14} />
+        </Pressable>
+      </View>
+    </Animated.View>
+  );
+}
+
+export function ToastProvider({ children }: React.PropsWithChildren) {
   const [toasts, setToasts] = useState<ToastRecord[]>([]);
   const nextIdRef = useRef(1);
   const timersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
@@ -83,7 +212,7 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
         toValue: 0,
         duration: 170,
         useNativeDriver: true,
-      }).start(({ finished }) => {
+      }).start(({ finished }: { finished: boolean }) => {
         if (finished) {
           delete progressMapRef.current[targetId];
           setToasts((latest) => latest.filter((toast) => toast.id !== targetId));
@@ -94,32 +223,35 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
     });
   }, []);
 
-  const showToast = useCallback((payload: ToastPayload) => {
-    const id = nextIdRef.current++;
-    const toast: ToastRecord = {
-      id,
-      durationMs: 2600,
-      variant: 'info',
-      ...payload,
-    };
+  const showToast = useCallback(
+    (payload: ToastPayload) => {
+      const id = nextIdRef.current++;
+      const toast: ToastRecord = {
+        id,
+        durationMs: 2600,
+        variant: 'info',
+        ...payload,
+      };
 
-    logger.info('Showing toast', { id, title: toast.title, variant: toast.variant });
+      logger.info('Showing toast', { id, title: toast.title, variant: toast.variant });
 
-    const progress = new Animated.Value(0);
-    progressMapRef.current[id] = progress;
+      const progress = new Animated.Value(0);
+      progressMapRef.current[id] = progress;
 
-    setToasts((current) => [toast, ...current].slice(0, 3));
-    Animated.spring(progress, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 6,
-    }).start();
+      setToasts((current) => [toast, ...current].slice(0, 3));
+      Animated.spring(progress, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 20,
+        bounciness: 6,
+      }).start();
 
-    timersRef.current[id] = setTimeout(() => {
-      dismissToast(id);
-    }, toast.durationMs);
-  }, [dismissToast]);
+      timersRef.current[id] = setTimeout(() => {
+        dismissToast(id);
+      }, toast.durationMs);
+    },
+    [dismissToast],
+  );
 
   const value = useMemo<ToastContextValue>(
     () => ({ showToast, dismissToast }),
@@ -130,73 +262,14 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
     <ToastContext.Provider value={value}>
       {children}
       <View pointerEvents="box-none" style={toastStyles.viewport}>
-        {toasts.map((toast) => {
-          const progress = progressMapRef.current[toast.id] ?? new Animated.Value(1);
-          const icon = resolveToastIcon(toast);
-          const variant = toast.variant ?? 'info';
-          const accentColor = resolveAccentColor(theme, variant);
-
-          return (
-            <Animated.View
-              key={toast.id}
-              style={[
-                toastStyles.card,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                  shadowColor: theme.colors.shadow,
-                  opacity: progress,
-                  transform: [
-                    {
-                      translateY: progress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-16, 0],
-                      }),
-                    },
-                    {
-                      scale: progress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.96, 1],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <View style={[toastStyles.accent, { backgroundColor: accentColor }]} />
-              <View style={toastStyles.content}>
-                <View
-                  style={[
-                    toastStyles.iconWrap,
-                    {
-                      backgroundColor: theme.colors.surfaceSoft,
-                      borderColor: theme.colors.border,
-                    },
-                  ]}
-                >
-                  <AppIconView
-                    icon={icon}
-                    theme={theme}
-                    size={18}
-                    color={resolveIconColor(theme, icon.tone)}
-                  />
-                </View>
-                <View style={toastStyles.textWrap}>
-                  <Text style={[toastStyles.title, { color: theme.colors.text }]}>{toast.title}</Text>
-                  {toast.message ? (
-                    <Text style={[toastStyles.message, { color: theme.colors.textMuted }]}>{toast.message}</Text>
-                  ) : null}
-                </View>
-                <Pressable
-                  onPress={() => dismissToast(toast.id)}
-                  style={({ pressed }) => [toastStyles.closeButton, pressed && toastStyles.closeButtonPressed]}
-                >
-                  <AppIconView icon={{ name: 'xmark', tone: 'muted' }} theme={theme} size={14} />
-                </Pressable>
-              </View>
-            </Animated.View>
-          );
-        })}
+        {toasts.map((toast) => (
+          <ToastCard
+            key={toast.id}
+            toast={toast}
+            progress={progressMapRef.current[toast.id] ?? new Animated.Value(1)}
+            onDismiss={dismissToast}
+          />
+        ))}
       </View>
     </ToastContext.Provider>
   );

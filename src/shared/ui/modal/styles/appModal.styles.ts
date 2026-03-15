@@ -24,6 +24,17 @@ export const appModalStyles = StyleSheet.create({
     shadowRadius: 28,
     elevation: 8,
   },
+  dragHandleWrap: {
+    alignItems: 'center',
+    marginTop: -6,
+    marginBottom: 6,
+  },
+  dragHandle: {
+    width: 44,
+    height: 5,
+    borderRadius: 999,
+    opacity: 0.84,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',

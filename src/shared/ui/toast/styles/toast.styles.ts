@@ -22,6 +22,17 @@ export const toastStyles = StyleSheet.create({
     height: 4,
     width: '100%',
   },
+  dragHandleWrap: {
+    alignItems: 'center',
+    paddingTop: 8,
+    marginBottom: -2,
+  },
+  dragHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 999,
+    opacity: 0.8,
+  },
   content: {
     flexDirection: 'row',
     alignItems: 'flex-start',

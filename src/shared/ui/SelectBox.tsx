@@ -6,9 +6,12 @@ import {
   ScrollView,
   Text,
   View,
+  type PressableStateCallbackType,
 } from 'react-native';
 import type { AppTheme } from '../theme/themes';
+import { createLogger } from '../lib/logger';
 import { AppIconView, type AppIconSpec } from './AppIcon';
+import { useSwipeToDismiss } from './overlay/useSwipeToDismiss';
 import { selectBoxStyles } from './styles/selectBox.styles';
 
 export type SelectBoxIconSpec = AppIconSpec;
@@ -45,6 +48,8 @@ const CLOSE_TIMING = {
   duration: 180,
   useNativeDriver: true,
 } as const;
+
+const logger = createLogger('ui:select-box');
 
 function resolveBadgeColors(theme: AppTheme, isSelected: boolean, tone = 'primary' as const) {
   switch (tone) {
@@ -87,7 +92,11 @@ function SelectBoxIcon({
   isSelected: boolean;
   size: 'trigger' | 'option';
 }) {
-  const badgeColors = resolveBadgeColors(theme, isSelected, icon.tone === 'default' ? 'primary' : icon.tone);
+  const badgeColors = resolveBadgeColors(
+    theme,
+    isSelected,
+    icon.tone === 'default' ? 'primary' : icon.tone,
+  );
 
   return (
     <>
@@ -102,7 +111,7 @@ function SelectBoxIcon({
             },
           ]}
         >
-          <Text style={[selectBoxStyles.iconBadgeText, { color: badgeColors.textColor }]}>
+          <Text style={[selectBoxStyles.iconBadgeText, { color: badgeColors.textColor }]}> 
             {icon.badgeLabel}
           </Text>
         </View>
@@ -123,10 +132,19 @@ export function SelectBox<T extends string>({
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const progress = useRef(new Animated.Value(0)).current;
+  const { panHandlers, reset, translateY } = useSwipeToDismiss({
+    enabled: isMounted,
+    dismissThreshold: 94,
+    velocityThreshold: 1,
+    onDismiss: () => {
+      logger.info('Dismissed select sheet by swipe', { label, modalTitle });
+      close();
+    },
+  });
 
   const selectedOption = useMemo(
     () => options.find((option) => option.value === value) ?? null,
-    [options, value]
+    [options, value],
   );
 
   useEffect(() => {
@@ -136,17 +154,19 @@ export function SelectBox<T extends string>({
 
     setIsMounted(true);
     progress.setValue(0);
+    reset();
     Animated.spring(progress, OPEN_SPRING).start();
-  }, [isOpen, progress]);
+  }, [isOpen, progress, reset]);
 
-  const close = () => {
-    Animated.timing(progress, CLOSE_TIMING).start(({ finished }) => {
+  function close() {
+    Animated.timing(progress, CLOSE_TIMING).start(({ finished }: { finished: boolean }) => {
       if (finished) {
+        reset();
         setIsMounted(false);
         setIsOpen(false);
       }
     });
-  };
+  }
 
   const open = () => {
     setIsOpen(true);
@@ -162,20 +182,52 @@ export function SelectBox<T extends string>({
   const triggerDescription = selectedOption?.description;
   const triggerMeta = selectedOption?.metaText;
 
-  const overlayOpacity = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-  });
+  const overlayOpacity = useMemo(
+    () =>
+      Animated.multiply(
+        progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
+        translateY.interpolate({
+          inputRange: [0, 180],
+          outputRange: [1, 0.66],
+          extrapolate: 'clamp',
+        }),
+      ),
+    [progress, translateY],
+  );
 
-  const panelTranslateY = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [42, 0],
-  });
+  const panelTranslateY = useMemo(
+    () =>
+      Animated.add(
+        progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [42, 0],
+        }),
+        translateY,
+      ),
+    [progress, translateY],
+  );
 
-  const panelScale = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.98, 1],
-  });
+  const panelScale = useMemo(
+    () =>
+      progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.98, 1],
+      }),
+    [progress],
+  );
+
+  const dragScale = useMemo(
+    () =>
+      translateY.interpolate({
+        inputRange: [0, 180],
+        outputRange: [1, 0.988],
+        extrapolate: 'clamp',
+      }),
+    [translateY],
+  );
 
   const chevronRotate = progress.interpolate({
     inputRange: [0, 1],
@@ -187,7 +239,7 @@ export function SelectBox<T extends string>({
       <Pressable
         onPress={open}
         accessibilityRole="button"
-        style={({ pressed }) => [
+        style={({ pressed }: PressableStateCallbackType) => [
           selectBoxStyles.trigger,
           {
             backgroundColor: theme.colors.surfaceAlt,
@@ -222,7 +274,10 @@ export function SelectBox<T extends string>({
             {triggerDescription || triggerMeta ? (
               <View style={selectBoxStyles.triggerMetaRow}>
                 {triggerDescription ? (
-                  <Text style={[selectBoxStyles.description, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                  <Text
+                    style={[selectBoxStyles.description, { color: theme.colors.textMuted }]}
+                    numberOfLines={1}
+                  >
                     {triggerDescription}
                   </Text>
                 ) : null}
@@ -272,25 +327,27 @@ export function SelectBox<T extends string>({
                 backgroundColor: theme.colors.surface,
                 borderColor: theme.colors.border,
                 shadowColor: theme.colors.shadow,
-                transform: [{ translateY: panelTranslateY }, { scale: panelScale }],
+                transform: [{ translateY: panelTranslateY }, { scale: panelScale }, { scale: dragScale }],
               },
             ]}
           >
-            <View style={selectBoxStyles.sheetHandleWrap}>
+            <View {...panHandlers} style={selectBoxStyles.sheetHandleWrap}>
               <View style={[selectBoxStyles.sheetHandle, { backgroundColor: theme.colors.border }]} />
             </View>
 
-            <View style={selectBoxStyles.sheetHeader}>
+            <View {...panHandlers} style={selectBoxStyles.sheetHeader}>
               <View style={selectBoxStyles.sheetHeaderTextWrap}>
-                {label ? <Text style={[selectBoxStyles.sheetEyebrow, { color: theme.colors.primary }]}>{label}</Text> : null}
-                <Text style={[selectBoxStyles.sheetTitle, { color: theme.colors.text }]}>
+                {label ? (
+                  <Text style={[selectBoxStyles.sheetEyebrow, { color: theme.colors.primary }]}>{label}</Text>
+                ) : null}
+                <Text style={[selectBoxStyles.sheetTitle, { color: theme.colors.text }]}> 
                   {modalTitle ?? label ?? triggerTitle}
                 </Text>
               </View>
 
               <Pressable
                 onPress={close}
-                style={({ pressed }) => [
+                style={({ pressed }: PressableStateCallbackType) => [
                   selectBoxStyles.closeButton,
                   {
                     backgroundColor: theme.colors.surfaceAlt,
@@ -319,7 +376,7 @@ export function SelectBox<T extends string>({
                     onPress={() => handleSelect(option.value)}
                     accessibilityRole="button"
                     accessibilityState={{ selected: isSelected, disabled: option.disabled }}
-                    style={({ pressed }) => [
+                    style={({ pressed }: PressableStateCallbackType) => [
                       selectBoxStyles.optionRow,
                       {
                         backgroundColor: isSelected ? theme.colors.surfaceSoft : theme.colors.surfaceAlt,
@@ -345,7 +402,9 @@ export function SelectBox<T extends string>({
 
                     <View style={selectBoxStyles.optionTextWrap}>
                       <View style={selectBoxStyles.optionTitleRow}>
-                        <Text style={[selectBoxStyles.optionTitle, { color: theme.colors.text }]}>{option.title}</Text>
+                        <Text style={[selectBoxStyles.optionTitle, { color: theme.colors.text }]}>
+                          {option.title}
+                        </Text>
                         {option.badgeText ? (
                           <Text
                             style={[
@@ -370,7 +429,9 @@ export function SelectBox<T extends string>({
 
                     <View style={selectBoxStyles.optionTrailing}>
                       {option.metaText ? (
-                        <Text style={[selectBoxStyles.optionMeta, { color: theme.colors.textSubtle }]}>{option.metaText}</Text>
+                        <Text style={[selectBoxStyles.optionMeta, { color: theme.colors.textSubtle }]}> 
+                          {option.metaText}
+                        </Text>
                       ) : null}
                       <View
                         style={[
@@ -382,7 +443,12 @@ export function SelectBox<T extends string>({
                         ]}
                       >
                         {isSelected ? (
-                          <AppIconView icon={{ name: 'check', tone: 'default' }} theme={theme} size={11} color={theme.colors.primaryText} />
+                          <AppIconView
+                            icon={{ name: 'check', tone: 'default' }}
+                            theme={theme}
+                            size={11}
+                            color={theme.colors.primaryText}
+                          />
                         ) : null}
                       </View>
                     </View>

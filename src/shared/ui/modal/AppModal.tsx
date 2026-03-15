@@ -1,8 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, Text, View } from 'react-native';
+import {
+  Animated,
+  Modal,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 import type { AppTheme } from '../../theme/themes';
+import { createLogger } from '../../lib/logger';
 import { Button } from '../Button';
 import { AppIconView, type AppIconSpec } from '../AppIcon';
+import { useSwipeToDismiss } from '../overlay/useSwipeToDismiss';
 import { appModalStyles } from './styles/appModal.styles';
 
 export type AppModalAction = {
@@ -37,6 +45,8 @@ const CLOSE_TIMING = {
   useNativeDriver: true,
 } as const;
 
+const logger = createLogger('ui:modal');
+
 export function AppModal({
   visible,
   theme,
@@ -49,38 +59,59 @@ export function AppModal({
 }: Props) {
   const [isMounted, setIsMounted] = useState(visible);
   const progress = useRef(new Animated.Value(visible ? 1 : 0)).current;
+  const { panHandlers, reset, translateY } = useSwipeToDismiss({
+    enabled: dismissible && visible,
+    dismissThreshold: 96,
+    velocityThreshold: 1,
+    onDismiss: () => {
+      logger.info('Dismissed modal by swipe', { title });
+      onClose();
+    },
+  });
 
   useEffect(() => {
     if (visible) {
       setIsMounted(true);
       progress.setValue(0);
+      reset();
       Animated.spring(progress, OPEN_SPRING).start();
       return;
     }
 
-    Animated.timing(progress, CLOSE_TIMING).start(({ finished }) => {
+    Animated.timing(progress, CLOSE_TIMING).start(({ finished }: { finished: boolean }) => {
       if (finished) {
+        reset();
         setIsMounted(false);
       }
     });
-  }, [visible, progress]);
+  }, [visible, progress, reset]);
 
   const overlayOpacity = useMemo(
     () =>
-      progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-      }),
-    [progress],
+      Animated.multiply(
+        progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
+        translateY.interpolate({
+          inputRange: [0, 160],
+          outputRange: [1, 0.72],
+          extrapolate: 'clamp',
+        }),
+      ),
+    [progress, translateY],
   );
 
   const panelTranslateY = useMemo(
     () =>
-      progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [28, 0],
-      }),
-    [progress],
+      Animated.add(
+        progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [28, 0],
+        }),
+        translateY,
+      ),
+    [progress, translateY],
   );
 
   const panelScale = useMemo(
@@ -92,6 +123,16 @@ export function AppModal({
     [progress],
   );
 
+  const dragScale = useMemo(
+    () =>
+      translateY.interpolate({
+        inputRange: [0, 160],
+        outputRange: [1, 0.985],
+        extrapolate: 'clamp',
+      }),
+    [translateY],
+  );
+
   if (!isMounted) {
     return null;
   }
@@ -99,7 +140,7 @@ export function AppModal({
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose}>
       <View style={appModalStyles.root}>
-        <Animated.View style={[appModalStyles.overlay, { opacity: overlayOpacity }]}>
+        <Animated.View style={[appModalStyles.overlay, { opacity: overlayOpacity }]}> 
           <Pressable
             style={appModalStyles.overlayPressable}
             onPress={dismissible ? onClose : undefined}
@@ -107,16 +148,23 @@ export function AppModal({
         </Animated.View>
 
         <Animated.View
+          {...(dismissible ? panHandlers : {})}
           style={[
             appModalStyles.panel,
             {
               backgroundColor: theme.colors.surface,
               borderColor: theme.colors.border,
               shadowColor: theme.colors.shadow,
-              transform: [{ translateY: panelTranslateY }, { scale: panelScale }],
+              transform: [{ translateY: panelTranslateY }, { scale: panelScale }, { scale: dragScale }],
             },
           ]}
         >
+          {dismissible ? (
+            <View style={appModalStyles.dragHandleWrap}>
+              <View style={[appModalStyles.dragHandle, { backgroundColor: theme.colors.border }]} />
+            </View>
+          ) : null}
+
           <View style={appModalStyles.header}>
             {icon ? (
               <View
